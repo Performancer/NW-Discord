@@ -3,7 +3,7 @@ using NW.Models;
 
 namespace NW.Repository
 {
-    public class MongoDBRepository : IRepositoryInterface
+    public class MongoDBRepository : IRepository
     {
         public Task<Announcement> AddAnnouncement(Announcement announcement)
         {
