@@ -8,6 +8,6 @@ namespace NW.Models
         public Character Killed { get; set; }
         public string Weapon { get; set; }
         public DateTime TimeStamp { get; set; }
-        public bool FriendOnFriend { get; set; }
+        public bool FriendlyFire { get; set; }
     }
 }
