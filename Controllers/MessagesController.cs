@@ -18,8 +18,18 @@ namespace NW.Controllers
         }
 
         [HttpGet]
-        public Task<ChatMessage[]> GetAll()
-        {
+        public Task<ChatMessage[]> GetAll(
+            [FromQuery(Name = "fromTime")] int fromTimestamp,
+            [FromQuery(Name = "toTime")] int toTimestamp,
+            [FromQuery(Name = "sender")] string killer,
+            [FromQuery(Name = "sender-account")] string killerAccount,
+            [FromQuery(Name = "sender-role")] int? killerRole,
+            [FromQuery(Name = "fromX")] int? fromX,
+            [FromQuery(Name = "fromY")] int? fromY,
+            [FromQuery(Name = "toX")] int? toX,
+            [FromQuery(Name = "toY")] int? toY,
+            [FromQuery(Name = "type")] int? type
+        ) {
             return _repository.GetChatMessages();
         }
 
