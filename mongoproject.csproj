@@ -3,5 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
-
+<ItemGroup>
+    <PackageReference Include="MongoDb.Driver" Version="2.11.2" />
+  </ItemGroup>
 </Project>
