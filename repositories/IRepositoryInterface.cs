@@ -4,7 +4,7 @@ using NW.Models;
 
 namespace NW.Repository
 {
-    public interface IRepositoryInterface
+    public interface IRepository
     {
         Task<Death> AddDeath(Death death);
         Task<Death[]> GetDeaths();

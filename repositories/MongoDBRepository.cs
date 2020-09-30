@@ -11,8 +11,7 @@ using NW.Models;
 
 namespace NW.Repository
 {
-
-    public class MongoDBRepository : IRepositoryInterface
+    public class MongoDBRepository : IRepository
     {
 
         private readonly IMongoCollection<ChatMessage> _ChatMessageCollection;
