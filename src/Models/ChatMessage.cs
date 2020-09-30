@@ -25,7 +25,7 @@ namespace NW.Models
         public List<Character> Listeners { get; set; }
 
         [Required(ErrorMessage = "Message is required")]
-        [StringLength(255, MinimumLength = 1, ErrorMessage = "Message needs to be between 1-255 letters")]
+        [StringLength(255, MinimumLength = 1, ErrorMessage = "Message has to be between 1-255 letters")]
         public string Message { get; set; }
 
         [EnumDataType(typeof(MessageType))]

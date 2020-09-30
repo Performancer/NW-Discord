@@ -13,7 +13,7 @@ namespace NW.Models
         public DateTime TimeStamp { get; }
 
         [Required(ErrorMessage = "Message is required")]
-        [StringLength(255, MinimumLength = 5, ErrorMessage = "Message needs to be between 5-255 letters")]
+        [StringLength(255, MinimumLength = 5, ErrorMessage = "Message has to be between 5-255 letters")]
         public string Message { get; set; }
 
         public bool Important { get; set; }
