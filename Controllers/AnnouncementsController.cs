@@ -18,8 +18,15 @@ namespace NW.Controllers
         }
 
         [HttpGet]
-        public Task<Announcement[]> GetAll()
-        {
+        public Task<Announcement[]> GetAll(
+            [FromQuery(Name = "from")] int fromTimestamp,
+            [FromQuery(Name = "to")] int toTimestamp,
+            [FromQuery(Name = "important")] bool? important
+        ) {
+            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0).ToLocalTime();
+            DateTime fromDateTime = epoch.AddSeconds(fromTimestamp);
+            DateTime toDateTime = epoch.AddSeconds(toTimestamp);
+
             return _repository.GetAnnouncements();
         }
 

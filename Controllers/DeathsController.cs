@@ -18,8 +18,28 @@ namespace NW.Controllers
         }
 
         [HttpGet]
-        public Task<Death[]> GetAll()
-        {
+        public Task<Death[]> GetAll(
+            [FromQuery(Name = "fromTime")] int fromTimestamp,
+            [FromQuery(Name = "toTime")] int toTimestamp,
+            [FromQuery(Name = "killer")] string killer,
+            [FromQuery(Name = "killer-account")] string killerAccount,
+            [FromQuery(Name = "killer-role")] int? killerRole,
+            [FromQuery(Name = "killed")] string killed,
+            [FromQuery(Name = "killed-account")] string killedAccount,
+            [FromQuery(Name = "killed-role")] int? killedRole,
+            [FromQuery(Name = "minscore")] int? minScore,
+            [FromQuery(Name = "maxscore")] int? maxScore,
+            [FromQuery(Name = "fromX")] int? fromX,
+            [FromQuery(Name = "fromY")] int? fromY,
+            [FromQuery(Name = "toX")] int? toX,
+            [FromQuery(Name = "toY")] int? toY,
+            [FromQuery(Name = "weapon")] string weapon,
+            [FromQuery(Name = "friendly")] bool? friendlyFire
+        ){
+            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0).ToLocalTime();
+            DateTime fromDateTime = epoch.AddSeconds(fromTimestamp);
+            DateTime toDateTime = epoch.AddSeconds(toTimestamp);
+
             return _repository.GetDeaths();
         }
 
