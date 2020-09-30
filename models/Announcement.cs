@@ -1,5 +1,6 @@
 using System;
 
+
 public class Announcement
 {
     public string Message { get; set; }

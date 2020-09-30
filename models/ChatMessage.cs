@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-public enum MessageStyle
-{
-    Shout, Normal, Whisper
-}
 
 public class ChatMessage
 {
