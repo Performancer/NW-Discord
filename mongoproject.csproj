@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 <ItemGroup>
+    <PackageReference Include="mongodb" Version="1.7.1.4791" />
     <PackageReference Include="MongoDb.Driver" Version="2.11.2" />
   </ItemGroup>
 </Project>

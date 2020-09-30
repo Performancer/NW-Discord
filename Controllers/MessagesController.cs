@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using NW.Models;
 using NW.Repository;
+using NW.FilterAttributes;
 
 namespace NW.Controllers
 {
@@ -34,6 +35,7 @@ namespace NW.Controllers
         }
 
         [HttpPost]
+        [ValidateModel]
         public Task<ChatMessage> Post([FromBody]ChatMessage message)
         {
             return _repository.AddChatMessage(message);

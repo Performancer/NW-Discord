@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using NW.Models;
 using NW.Repository;
+using NW.FilterAttributes;
 
 namespace NW.Controllers
 {
@@ -31,6 +32,7 @@ namespace NW.Controllers
         }
 
         [HttpPost]
+        [ValidateModel]
         public Task<Announcement> Post([FromBody]Announcement announcement)
         {
             return _repository.AddAnnouncement(announcement);
