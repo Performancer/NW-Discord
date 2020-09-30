@@ -1,38 +1,67 @@
 using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
+using System;
+
+using MongoDB.Driver;
+using MongoDB.Bson;
+
+
 using NW.Models;
 
 namespace NW.Repository
 {
     public class MongoDBRepository : IRepository
     {
-        public Task<Announcement> AddAnnouncement(Announcement announcement)
+        private readonly IMongoCollection<ChatMessage> _ChatMessageCollection;
+        private readonly IMongoCollection<Death> _DeathCollection;
+        private readonly IMongoCollection<Announcement> _AnnouncementCollection;
+
+        public MongoDBRepository()
         {
-            throw new System.NotImplementedException();
+            var mongoClient = new MongoClient("mongodb://localhost:27017");
+            var database = mongoClient.GetDatabase("NWDB");
+            _ChatMessageCollection = database.GetCollection<ChatMessage>("ChatMessages");
+            _DeathCollection = database.GetCollection<Death>("Deaths");
+            _AnnouncementCollection = database.GetCollection<Announcement>("Announcements");
+        }
+        public async Task<Announcement> AddAnnouncement(Announcement announcement)
+        {
+            await _AnnouncementCollection.InsertOneAsync(announcement);
+            return announcement;
         }
 
-        public Task<ChatMessage> AddChatMessage(ChatMessage message)
+        public async Task<ChatMessage> AddChatMessage(ChatMessage message)
         {
-            throw new System.NotImplementedException();
+            await _ChatMessageCollection.InsertOneAsync(message);
+            return message;
         }
 
-        public Task<Death> AddDeath(Death death)
+        public async Task<Death> AddDeath(Death death)
         {
-            throw new System.NotImplementedException();
+            await _DeathCollection.InsertOneAsync(death);
+            return death;
         }
 
-        public Task<Announcement[]> GetAnnouncements()
+        public async Task<Announcement[]> GetAnnouncements()
         {
-            throw new System.NotImplementedException();
+            List<Announcement> announcements = await _AnnouncementCollection.Find(new BsonDocument()).ToListAsync();
+            Console.WriteLine("AnnouncementCount=" + announcements.Count);
+            return announcements.ToArray();
         }
 
-        public Task<ChatMessage[]> GetChatMessages()
+        public async Task<ChatMessage[]> GetChatMessages()
         {
-            throw new System.NotImplementedException();
+            List<ChatMessage> chatMessages = await _ChatMessageCollection.Find(new BsonDocument()).ToListAsync();
+            Console.WriteLine("AnnouncementCount=" + chatMessages.Count);
+            return chatMessages.ToArray();
         }
 
-        public Task<Death[]> GetDeaths()
+        public async Task<Death[]> GetDeaths()
         {
-            throw new System.NotImplementedException();
+            List<Death> deaths = await _DeathCollection.Find(new BsonDocument()).ToListAsync();
+            Console.WriteLine("AnnouncementCount=" + deaths.Count);
+            return deaths.ToArray();
         }
     }
 }
