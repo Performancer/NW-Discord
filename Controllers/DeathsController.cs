@@ -12,7 +12,7 @@ namespace NW.Controllers
     {
         private readonly IRepository _repository;
 
-        public DeathController(IRepository repository)
+        public DeathsController(IRepository repository)
         {
             _repository = repository;
         }
@@ -24,7 +24,7 @@ namespace NW.Controllers
         }
 
         [HttpPost]
-        public Task<Death[]> Post([FromBody]Death death)
+        public Task<Death> Post([FromBody]Death death)
         {
             return _repository.AddDeath(death);
         }

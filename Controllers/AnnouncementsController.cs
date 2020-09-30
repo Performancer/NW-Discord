@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,13 +20,13 @@ namespace NW.Controllers
         [HttpGet]
         public Task<Announcement[]> GetAll()
         {
-            return _repository.GetDeaths();
+            return _repository.GetAnnouncements();
         }
 
         [HttpPost]
-        public Task<Announcement[]> Post([FromBody]Announcement announcement)
+        public Task<Announcement> Post([FromBody]Announcement announcement)
         {
-            return _repository.AddDeath(death);
+            return _repository.AddAnnouncement(announcement);
         }
     }
 }

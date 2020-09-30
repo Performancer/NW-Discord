@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +12,7 @@ namespace NW.Controllers
     {
         private readonly IRepository _repository;
 
-        public AnnouncementsController(IRepository repository)
+        public MessagesController(IRepository repository)
         {
             _repository = repository;
         }
@@ -26,7 +24,7 @@ namespace NW.Controllers
         }
 
         [HttpPost]
-        public Task<ChatMessage[]> Post([FromBody]ChatMessage message)
+        public Task<ChatMessage> Post([FromBody]ChatMessage message)
         {
             return _repository.AddChatMessage(message);
         }
