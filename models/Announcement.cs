@@ -1,9 +1,12 @@
 using System;
 
-
-public class Announcement
+namespace NW.Models
 {
-    public string Message { get; set; }
-    public DateTime TimeStamp { get; set; }
-    public bool Important { get; set; }
+    public class Announcement
+    {
+        public string Message { get; set; }
+        public DateTime TimeStamp { get; set; }
+        public bool Important { get; set; }
+    }
 }
+
