@@ -16,6 +16,8 @@ namespace NW.Models
             TimeStamp = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             Id = Guid.NewGuid();
         }
+        
+        public Guid Id { get; set; }
 
         public long TimeStamp { get; set; }
 
@@ -31,7 +33,5 @@ namespace NW.Models
 
         [EnumDataType(typeof(MessageType))]
         public MessageType Type { get; set; }
-
-        public Guid Id { get; set; }
     }
 }

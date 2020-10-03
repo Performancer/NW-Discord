@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace NW.Models
 {
@@ -16,8 +15,9 @@ namespace NW.Models
             Id = Guid.NewGuid();
         }
 
+        public Guid Id { get; set; }
+
         [StringLength(20, MinimumLength = 1, ErrorMessage = "Account needs to be between 1-20 letters")]
-        [JsonIgnore] // not a secret per se, but still the security is appreciated
         public string AccountName { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
@@ -27,10 +27,9 @@ namespace NW.Models
         [EnumDataType(typeof(AccessRole))]
         public AccessRole Role { get; set; }
 
+        [Required(ErrorMessage = "Location is required")]
         public Vector3 Location { get; set; }
 
         public int Score { get; set; }
-
-        public Guid Id { get; set; }
     }
 }
