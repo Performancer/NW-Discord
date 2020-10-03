@@ -20,9 +20,9 @@ namespace NW.Controllers
 
         [HttpGet]
         public Task<Announcement[]> GetAll(
-            [FromQuery(Name = "from")] long fromTimestamp,
-            [FromQuery(Name = "to")] long toTimestamp,
-            [FromQuery(Name = "important")] bool? important
+            [FromQuery(Name = "important")] bool? important,
+            [FromQuery(Name = "from")] long fromTimestamp = long.MinValue,
+            [FromQuery(Name = "to")] long toTimestamp = long.MaxValue
         )
         {
             return _repository.GetAnnouncements(important, fromTimestamp, toTimestamp);

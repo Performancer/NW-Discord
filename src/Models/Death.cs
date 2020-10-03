@@ -5,7 +5,7 @@ namespace NW.Models
 {
     public class Death
     {
-        Death()
+        public Death()
         {
             TimeStamp = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             Id = Guid.NewGuid();
