@@ -5,6 +5,7 @@
   </PropertyGroup>
 <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.0" />
+    <PackageReference Include="discord.net" Version="2.2.0" />
     <PackageReference Include="MongoDb.Driver" Version="2.11.2" />
   </ItemGroup>
 </Project>

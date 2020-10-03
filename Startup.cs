@@ -9,12 +9,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using NW.Repository;
+using NW.Discord;
 
 namespace NW
 {
     public static class AuthenticationMiddlewareExtensions
     {
-        public static IApplicationBuilder UseAuthentication(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseTokenAuthentication(this IApplicationBuilder builder)
         {
             return builder.UseMiddleware<AuthenticationMiddleware>();
         }
@@ -28,6 +29,7 @@ namespace NW
         {
             services.AddControllers();
             services.AddSingleton<IRepository, MongoDBRepository>();
+            services.AddSingleton<IDiscord, DiscordClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,8 +39,9 @@ namespace NW
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+
             app.UseAuthentication();
+            app.UseTokenAuthentication();
 
             app.UseRouting();
 

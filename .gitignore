@@ -4,3 +4,4 @@ bin/
 *.sln
 obj/**
 security-key.txt
+discord-keys.txt
