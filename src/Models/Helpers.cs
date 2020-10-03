@@ -4,7 +4,7 @@ namespace NW.Models
 {
     public class Vector3
     {
-        Vector3()
+        public Vector3()
         {
             Id = Guid.NewGuid();
         }

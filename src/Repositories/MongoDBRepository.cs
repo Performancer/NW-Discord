@@ -48,8 +48,6 @@ namespace NW.Repository
             long fromTimestamp = 0,
             long toTimestamp = long.MaxValue)
         {
-            FilterDefinition<Announcement> filter1 = Builders<Announcement>.Filter.Empty;
-
             FilterDefinition<Announcement> filter = Builders<Announcement>.Filter.And(
                 Builders<Announcement>.Filter.Gte(a => a.TimeStamp, fromTimestamp),
                 Builders<Announcement>.Filter.Lte(a => a.TimeStamp, toTimestamp)
@@ -58,7 +56,7 @@ namespace NW.Repository
             if (important != null)
                 filter &= Builders<Announcement>.Filter.Eq(a => a.Important, important);
 
-            List<Announcement> announcements = await _AnnouncementCollection.Find(filter1).ToListAsync();
+            List<Announcement> announcements = await _AnnouncementCollection.Find(filter).ToListAsync();
 
             Console.WriteLine("AnnouncementCount=" + announcements.Count);
             return announcements.ToArray();
@@ -77,7 +75,6 @@ namespace NW.Repository
             string senderAccount = ""
         )
         {
-            FilterDefinition<ChatMessage> filter1 = Builders<ChatMessage>.Filter.Empty;
             FilterDefinition<ChatMessage> filter = Builders<ChatMessage>.Filter.And(
                 Builders<ChatMessage>.Filter.Gte(m => m.TimeStamp, fromTimestamp),
                 Builders<ChatMessage>.Filter.Lte(m => m.TimeStamp, toTimestamp)
@@ -96,7 +93,7 @@ namespace NW.Repository
                 filter &= Builders<ChatMessage>.Filter.Eq(m => m.Sender.AccountName, sender);
 
 
-            List<ChatMessage> chatMessages = await _ChatMessageCollection.Find(filter1).ToListAsync();
+            List<ChatMessage> chatMessages = await _ChatMessageCollection.Find(filter).ToListAsync();
             Console.WriteLine("AnnouncementCount=" + chatMessages.Count);
             return chatMessages.ToArray();
         }
@@ -120,14 +117,10 @@ namespace NW.Repository
             string killedAccount = ""
         )
         {
+            FilterDefinition<Death> filter1 = Builders<Death>.Filter.Empty;
             FilterDefinition<Death> filter = Builders<Death>.Filter.And(
                 Builders<Death>.Filter.Gte(d => d.TimeStamp, fromTimestamp),
-                Builders<Death>.Filter.Lte(d => d.TimeStamp, toTimestamp),
-                Builders<Death>.Filter.Eq(d => d.Killer.Name, killer),
-                Builders<Death>.Filter.Eq(d => d.Killer.AccountName, killerAccount),
-                Builders<Death>.Filter.Eq(d => d.Weapon, weapon),
-                Builders<Death>.Filter.Eq(d => d.Killed.Name, killed),
-                Builders<Death>.Filter.Eq(d => d.Killed.AccountName, killedAccount)
+                Builders<Death>.Filter.Lte(d => d.TimeStamp, toTimestamp)
             );
 
             if (killerRole != null)
@@ -157,8 +150,30 @@ namespace NW.Repository
             if (friendlyFire != null)
                 filter &= Builders<Death>.Filter.Eq(d => d.FriendlyFire, friendlyFire);
 
+            if (killer != "")
+                filter &= Builders<Death>.Filter.Eq(d => d.Killer.Name, killer);
+
+            if (killerAccount != "")
+                filter &= Builders<Death>.Filter.Eq(d => d.Killer.AccountName, killerAccount);
+
+            if (weapon != "")
+                filter &= Builders<Death>.Filter.Eq(d => d.Weapon, weapon);
+
+            if (killed != "")
+                filter &= Builders<Death>.Filter.Eq(d => d.Killed.Name, killed);
+
+            if (killedAccount != "")
+                filter &= Builders<Death>.Filter.Eq(d => d.Killed.AccountName, killedAccount);
+
+            Console.WriteLine("killer=" + killer);
+            Console.WriteLine("killerAccount=" + killerAccount);
+            Console.WriteLine("weapon=" + weapon);
+            Console.WriteLine("killed=" + killed);
+            Console.WriteLine("killer=" + killedAccount);
+
+
             List<Death> deaths = await _DeathCollection.Find(filter).ToListAsync();
-            Console.WriteLine("AnnouncementCount=" + deaths.Count);
+            Console.WriteLine("DeathCount=" + deaths.Count);
             return deaths.ToArray();
         }
     }
