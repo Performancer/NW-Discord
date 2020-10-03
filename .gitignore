@@ -5,7 +5,11 @@ bin/
 obj/**
 security-key.txt
 <<<<<<< HEAD
+<<<<<<< HEAD
 discord-key.txt
 =======
 discord-keys.txt
 >>>>>>> new branch
+=======
+discord-key.txt
+>>>>>>> discord working
