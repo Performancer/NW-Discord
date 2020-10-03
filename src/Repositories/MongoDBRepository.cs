@@ -115,7 +115,6 @@ namespace NW.Repository
             string killedAccount = ""
         )
         {
-            FilterDefinition<Death> filter1 = Builders<Death>.Filter.Empty;
             FilterDefinition<Death> filter = Builders<Death>.Filter.And(
                 Builders<Death>.Filter.Gte(d => d.TimeStamp, fromTimestamp),
                 Builders<Death>.Filter.Lte(d => d.TimeStamp, toTimestamp)
