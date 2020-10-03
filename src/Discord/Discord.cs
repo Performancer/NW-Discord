@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-
 using Discord;
 using Discord.WebSocket;
 
@@ -19,7 +17,7 @@ namespace NW.Discord
 
             //  You can assign your bot token to a string, and pass that in to connect.
             //  This is, however, insecure, particularly if you plan to have your code hosted in a public repository.
-            string token = File.ReadAllText("discord-key.txt");
+            var token = File.ReadAllText("discord-key.txt");
 
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
