@@ -12,10 +12,12 @@ namespace NW.Controllers
     public class DeathsController : Controller
     {
         private readonly IRepository _repository;
+        private readonly IDiscord _discord;
 
-        public DeathsController(IRepository repository)
+        public DeathsController(IRepository repository, IDiscord discord)
         {
             _repository = repository;
+            _discord = discord;
         }
 
         [HttpGet]
@@ -62,9 +64,13 @@ namespace NW.Controllers
 
         [HttpPost]
         [ValidateModel]
-        public Task<Death> Post([FromBody] Death death)
+        public async Task<Death> Post([FromBody] Death death)
         {
-            return _repository.AddDeath(death);
+            Death deth = await _repository.AddDeath(death);
+
+            _discord.SendMessage("Lol, " + death.Killed.Name + " kuali, aika paska pelaamaan");
+
+            return deth;
         }
     }
 }

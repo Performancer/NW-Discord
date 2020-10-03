@@ -30,9 +30,11 @@ namespace NW.Controllers
 
         [HttpPost]
         [ValidateModel]
-        public Task<Announcement> Post([FromBody] Announcement announcement)
+        public async Task<Announcement> Post([FromBody] Announcement announcement)
         {
-            return _repository.AddAnnouncement(announcement);
+            Announcement a = await _repository.AddAnnouncement(announcement);
+            //_discord.Notice(a);
+            return a;
         }
     }
 }
