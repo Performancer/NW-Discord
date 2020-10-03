@@ -4,4 +4,8 @@ bin/
 *.sln
 obj/**
 security-key.txt
+<<<<<<< HEAD
 discord-key.txt
+=======
+discord-keys.txt
+>>>>>>> new branch
