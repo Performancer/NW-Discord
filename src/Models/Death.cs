@@ -11,6 +11,8 @@ namespace NW.Models
             Id = Guid.NewGuid();
         }
 
+        public Guid Id { get; set; }
+
         public long TimeStamp { get; set; }
 
         public Character Killer { get; set; }
@@ -23,7 +25,5 @@ namespace NW.Models
         public string Weapon { get; set; }
 
         public bool FriendlyFire { get; set; }
-
-        public Guid Id { get; set; }
     }
 }
