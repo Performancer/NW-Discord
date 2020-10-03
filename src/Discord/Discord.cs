@@ -28,10 +28,15 @@ namespace NW.Discord
         public async void SendMessage(string message)
         {
             if (_client == null)
-                await Login();
+               Login();
 
-            IMessageChannel c = _client.GetChannel(_channelID) as IMessageChannel;
-            await c.SendMessageAsync(message);
+            IMessageChannel channel;
+
+            while((channel = _client.GetChannel(_channelID) as IMessageChannel) == null) {
+                await Task.Delay(1000);
+            }
+
+            await channel.SendMessageAsync(message);
         }
     }
 }
