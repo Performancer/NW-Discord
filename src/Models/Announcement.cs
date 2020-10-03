@@ -7,15 +7,18 @@ namespace NW.Models
     {
         public Announcement()
         {
-            TimeStamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            TimeStamp = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            Id = Guid.NewGuid();
         }
 
-        public long TimeStamp { get; }
+        public long TimeStamp { get; set; }
 
         [Required(ErrorMessage = "Message is required")]
         [StringLength(255, MinimumLength = 5, ErrorMessage = "Message has to be between 5-255 letters")]
         public string Message { get; set; }
 
         public bool Important { get; set; }
+
+        public Guid Id { get; set; }
     }
 }

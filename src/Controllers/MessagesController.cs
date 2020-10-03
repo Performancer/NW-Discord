@@ -22,7 +22,6 @@ namespace NW.Controllers
         public Task<ChatMessage[]> GetAll(
             [FromQuery(Name = "fromTime")] long fromTimestamp,
             [FromQuery(Name = "toTime")] long toTimestamp,
-
             [FromQuery(Name = "sender-role")] int? senderRole,
             [FromQuery(Name = "fromX")] int? fromX,
             [FromQuery(Name = "fromY")] int? fromY,
