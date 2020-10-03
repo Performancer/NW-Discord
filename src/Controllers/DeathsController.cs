@@ -66,11 +66,7 @@ namespace NW.Controllers
         [ValidateModel]
         public async Task<Death> Post([FromBody] Death death)
         {
-            Death deth = await _repository.AddDeath(death);
-
-            _discord.SendMessage("Lol, " + death.Killed.Name + " kuali, aika paska pelaamaan");
-
-            return deth;
+            return _discord.Notice(await _repository.AddDeath(death));
         }
     }
 }

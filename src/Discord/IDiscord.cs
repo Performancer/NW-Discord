@@ -1,9 +1,8 @@
 
-using System.Threading.Tasks;
-
-
+using NW.Models;
 
 public interface IDiscord
 {
-    void SendMessage(string message);
+    void Notice(string message);
+    Death Notice(Death death);
 }

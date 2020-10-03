@@ -31,5 +31,15 @@ namespace NW.Models
         public Vector3 Location { get; set; }
 
         public int Score { get; set; }
+
+        public bool IsPlayer()
+        {
+            return AccountName != null && AccountName.Length > 0;
+        }
+
+        public override string ToString()
+        {
+            return Name + " " + Location;
+        }
     }
 }

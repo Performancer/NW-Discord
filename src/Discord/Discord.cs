@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using NW.Models;
 
 namespace NW.Discord
 {
@@ -24,8 +25,8 @@ namespace NW.Discord
 
             await Task.Delay(-1);
         }
-
-        public async void SendMessage(string message)
+    
+        public async void Notice(string message)
         {
             if (_client == null)
                Login();
@@ -37,6 +38,33 @@ namespace NW.Discord
             }
 
             await channel.SendMessageAsync(message);
+        }
+
+        public Death Notice(Death death)
+        {
+            string message;
+
+            if(death.Killer != null && death.Killer.IsPlayer() && death.Killed != null && death.Killed.IsPlayer())
+            {
+                message = "PLAYER KILL: ";
+            }
+            else
+            {
+                message = "Death: ";
+            }
+
+            message += death.Killed + " was killed by ";
+
+            if(death.Killer != null)
+                message += death.Killer + " with " + death.Weapon + " as a weapon.";
+            else
+                message += death.Weapon;
+
+            if(death.FriendlyFire)
+                message += " This was friendly fire.";
+
+            Notice("**" + message + "**");
+            return death;
         }
     }
 }
