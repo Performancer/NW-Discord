@@ -20,8 +20,8 @@ namespace NW.Controllers
 
         [HttpGet]
         public Task<Death[]> GetAll(
-            [FromQuery(Name = "fromTime")] int fromTimestamp,
-            [FromQuery(Name = "toTime")] int toTimestamp,
+            [FromQuery(Name = "fromTime")] long fromTimestamp,
+            [FromQuery(Name = "toTime")] long toTimestamp,
             [FromQuery(Name = "killer")] string killer,
             [FromQuery(Name = "killer-account")] string killerAccount,
             [FromQuery(Name = "killer-role")] int? killerRole,
@@ -36,17 +36,31 @@ namespace NW.Controllers
             [FromQuery(Name = "toY")] int? toY,
             [FromQuery(Name = "weapon")] string weapon,
             [FromQuery(Name = "friendly")] bool? friendlyFire
-        ){
-            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0).ToLocalTime();
-            DateTime fromDateTime = epoch.AddSeconds(fromTimestamp);
-            DateTime toDateTime = epoch.AddSeconds(toTimestamp);
-
-            return _repository.GetDeaths();
+        )
+        {
+            return _repository.GetDeaths(
+                killerRole,
+                killedRole,
+                minScore,
+                maxScore,
+                fromX,
+                fromY,
+                toX,
+                toY,
+                friendlyFire,
+                fromTimestamp,
+                toTimestamp,
+                killer,
+                killerAccount,
+                weapon,
+                killed,
+                killedAccount
+            );
         }
 
         [HttpPost]
         [ValidateModel]
-        public Task<Death> Post([FromBody]Death death)
+        public Task<Death> Post([FromBody] Death death)
         {
             return _repository.AddDeath(death);
         }

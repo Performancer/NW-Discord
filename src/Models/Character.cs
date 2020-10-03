@@ -10,7 +10,7 @@ namespace NW.Models
 
     public class Character
     {
-        [StringLength(15, MinimumLength = 4, ErrorMessage = "Account needs to be between 4-15 letters")]
+        [StringLength(20, MinimumLength = 1, ErrorMessage = "Account needs to be between 1-20 letters")]
         public string AccountName { get; set; }
 
         [Required(ErrorMessage = "Name is required")]

@@ -7,10 +7,10 @@ namespace NW.Models
     {
         Death()
         {
-            TimeStamp = DateTime.Now;
+            TimeStamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
 
-        public DateTime TimeStamp { get; }
+        public long TimeStamp { get; }
 
         public Character Killer { get; set; }
 

@@ -20,23 +20,37 @@ namespace NW.Controllers
 
         [HttpGet]
         public Task<ChatMessage[]> GetAll(
-            [FromQuery(Name = "fromTime")] int fromTimestamp,
-            [FromQuery(Name = "toTime")] int toTimestamp,
-            [FromQuery(Name = "sender")] string killer,
-            [FromQuery(Name = "sender-account")] string killerAccount,
-            [FromQuery(Name = "sender-role")] int? killerRole,
+            [FromQuery(Name = "fromTime")] long fromTimestamp,
+            [FromQuery(Name = "toTime")] long toTimestamp,
+
+            [FromQuery(Name = "sender-role")] int? senderRole,
             [FromQuery(Name = "fromX")] int? fromX,
             [FromQuery(Name = "fromY")] int? fromY,
             [FromQuery(Name = "toX")] int? toX,
             [FromQuery(Name = "toY")] int? toY,
-            [FromQuery(Name = "type")] int? type
-        ) {
-            return _repository.GetChatMessages();
+            [FromQuery(Name = "type")] int? type,
+            [FromQuery(Name = "sender")] string sender,
+            [FromQuery(Name = "sender-account")] string senderAccount
+        )
+        {
+            return _repository.GetChatMessages(
+
+                senderRole,
+                fromX,
+                fromY,
+                toX,
+                toY,
+                type,
+                fromTimestamp,
+                toTimestamp,
+                sender,
+                senderAccount
+            );
         }
 
         [HttpPost]
         [ValidateModel]
-        public Task<ChatMessage> Post([FromBody]ChatMessage message)
+        public Task<ChatMessage> Post([FromBody] ChatMessage message)
         {
             return _repository.AddChatMessage(message);
         }

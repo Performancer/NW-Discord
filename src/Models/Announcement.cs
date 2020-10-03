@@ -7,10 +7,10 @@ namespace NW.Models
     {
         public Announcement()
         {
-            TimeStamp = DateTime.Now;
+            TimeStamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
 
-        public DateTime TimeStamp { get; }
+        public long TimeStamp { get; }
 
         [Required(ErrorMessage = "Message is required")]
         [StringLength(255, MinimumLength = 5, ErrorMessage = "Message has to be between 5-255 letters")]

@@ -20,20 +20,17 @@ namespace NW.Controllers
 
         [HttpGet]
         public Task<Announcement[]> GetAll(
-            [FromQuery(Name = "from")] int fromTimestamp,
-            [FromQuery(Name = "to")] int toTimestamp,
+            [FromQuery(Name = "from")] long fromTimestamp,
+            [FromQuery(Name = "to")] long toTimestamp,
             [FromQuery(Name = "important")] bool? important
-        ) {
-            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0).ToLocalTime();
-            DateTime fromDateTime = epoch.AddSeconds(fromTimestamp);
-            DateTime toDateTime = epoch.AddSeconds(toTimestamp);
-
-            return _repository.GetAnnouncements();
+        )
+        {
+            return _repository.GetAnnouncements(important, fromTimestamp, toTimestamp);
         }
 
         [HttpPost]
         [ValidateModel]
-        public Task<Announcement> Post([FromBody]Announcement announcement)
+        public Task<Announcement> Post([FromBody] Announcement announcement)
         {
             return _repository.AddAnnouncement(announcement);
         }

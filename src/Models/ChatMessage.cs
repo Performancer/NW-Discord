@@ -13,15 +13,15 @@ namespace NW.Models
     {
         public ChatMessage()
         {
-            TimeStamp = DateTime.Now;
+            TimeStamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
 
-        public DateTime TimeStamp { get; }
+        public long TimeStamp { get; }
 
         [Required(ErrorMessage = "Sender is required")]
         public Character Sender { get; set; }
-        
-         [Required(ErrorMessage = "Listeners are required")]
+
+        [Required(ErrorMessage = "Listeners are required")]
         public List<Character> Listeners { get; set; }
 
         [Required(ErrorMessage = "Message is required")]
