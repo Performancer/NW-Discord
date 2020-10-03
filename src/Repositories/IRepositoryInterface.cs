@@ -42,6 +42,10 @@ namespace NW.Repository
         );
 
         Task<Announcement> AddAnnouncement(Announcement announcement);
-        Task<Announcement[]> GetAnnouncements(bool? important, long fromTimestamp = 0, long toTimestamp = int.MaxValue);
+        Task<Announcement[]> GetAnnouncements(
+            bool? important,
+            long fromTimestamp = 0,
+            long toTimestamp = int.MaxValue
+        );
     }
 }

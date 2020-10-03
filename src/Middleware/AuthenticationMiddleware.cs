@@ -27,7 +27,8 @@ namespace NW
 
             /** b-crypt is used to verify the token because a regular string comparison returns on the first 
             unmatching character, revealing the number of matching characters before the umatching one **/
-            if(token.Length == 0 || !BCrypt.Net.BCrypt.EnhancedVerify(token, hashed)) {
+            if (token.Length == 0 || !BCrypt.Net.BCrypt.EnhancedVerify(token, hashed))
+            {
                 httpContext.Response.StatusCode = 404;
                 return;
             }
@@ -38,7 +39,7 @@ namespace NW
         public string CheckSecurityKey(string file)
         {
             if (!File.Exists(file))
-                using(StreamWriter sw = File.AppendText(file)) sw.Write(GenerateRandomKey());
+                using (StreamWriter sw = File.AppendText(file)) sw.Write(GenerateRandomKey());
 
             return file;
         }
