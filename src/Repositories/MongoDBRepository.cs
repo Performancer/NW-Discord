@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using MongoDB.Driver;
 using MongoDB.Bson;
 
-
 using NW.Models;
 
 namespace NW.Repository
@@ -58,7 +57,6 @@ namespace NW.Repository
 
             List<Announcement> announcements = await _AnnouncementCollection.Find(filter).ToListAsync();
 
-            Console.WriteLine("AnnouncementCount=" + announcements.Count);
             return announcements.ToArray();
         }
 
@@ -95,7 +93,6 @@ namespace NW.Repository
 
             List<ChatMessage> chatMessages = await _ChatMessageCollection.Find(filter).ToListAsync();
 
-            Console.WriteLine("AnnouncementCount=" + chatMessages.Count);
             return chatMessages.ToArray();
         }
 
