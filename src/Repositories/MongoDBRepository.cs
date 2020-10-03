@@ -94,6 +94,7 @@ namespace NW.Repository
 
 
             List<ChatMessage> chatMessages = await _ChatMessageCollection.Find(filter).ToListAsync();
+
             Console.WriteLine("AnnouncementCount=" + chatMessages.Count);
             return chatMessages.ToArray();
         }
@@ -165,15 +166,8 @@ namespace NW.Repository
             if (killedAccount != "")
                 filter &= Builders<Death>.Filter.Eq(d => d.Killed.AccountName, killedAccount);
 
-            Console.WriteLine("killer=" + killer);
-            Console.WriteLine("killerAccount=" + killerAccount);
-            Console.WriteLine("weapon=" + weapon);
-            Console.WriteLine("killed=" + killed);
-            Console.WriteLine("killer=" + killedAccount);
-
-
             List<Death> deaths = await _DeathCollection.Find(filter).ToListAsync();
-            Console.WriteLine("DeathCount=" + deaths.Count);
+
             return deaths.ToArray();
         }
     }
