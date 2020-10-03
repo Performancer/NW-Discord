@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace NW.Models
 {
@@ -16,6 +17,7 @@ namespace NW.Models
         }
 
         [StringLength(20, MinimumLength = 1, ErrorMessage = "Account needs to be between 1-20 letters")]
+        [JsonIgnore] // not a secret per se, but still the security is appreciated
         public string AccountName { get; set; }
 
         [Required(ErrorMessage = "Name is required")]

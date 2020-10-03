@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.0" />
     <PackageReference Include="MongoDb.Driver" Version="2.11.2" />
   </ItemGroup>
 </Project>

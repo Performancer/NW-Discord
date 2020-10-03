@@ -10,8 +10,16 @@ using Microsoft.Extensions.Hosting;
 
 using NW.Repository;
 
-namespace mongoproject
+namespace NW
 {
+    public static class AuthenticationMiddlewareExtensions
+    {
+        public static IApplicationBuilder UseAuthentication(this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<AuthenticationMiddleware>();
+        }
+    }
+
     public class Startup
     {
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -29,6 +37,8 @@ namespace mongoproject
             {
                 app.UseDeveloperExceptionPage();
             }
+            
+            app.UseAuthentication();
 
             app.UseRouting();
 
