@@ -7,10 +7,11 @@ namespace NW.Models
     {
         Death()
         {
-            TimeStamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            TimeStamp = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            Id = Guid.NewGuid();
         }
 
-        public long TimeStamp { get; }
+        public long TimeStamp { get; set; }
 
         public Character Killer { get; set; }
 
@@ -22,5 +23,7 @@ namespace NW.Models
         public string Weapon { get; set; }
 
         public bool FriendlyFire { get; set; }
+
+        public Guid Id { get; set; }
     }
 }

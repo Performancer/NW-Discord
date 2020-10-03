@@ -13,10 +13,11 @@ namespace NW.Models
     {
         public ChatMessage()
         {
-            TimeStamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            TimeStamp = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            Id = Guid.NewGuid();
         }
 
-        public long TimeStamp { get; }
+        public long TimeStamp { get; set; }
 
         [Required(ErrorMessage = "Sender is required")]
         public Character Sender { get; set; }
@@ -30,5 +31,7 @@ namespace NW.Models
 
         [EnumDataType(typeof(MessageType))]
         public MessageType Type { get; set; }
+
+        public Guid Id { get; set; }
     }
 }

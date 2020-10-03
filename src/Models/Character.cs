@@ -10,6 +10,11 @@ namespace NW.Models
 
     public class Character
     {
+        Character()
+        {
+            Id = Guid.NewGuid();
+        }
+
         [StringLength(20, MinimumLength = 1, ErrorMessage = "Account needs to be between 1-20 letters")]
         public string AccountName { get; set; }
 
@@ -23,5 +28,7 @@ namespace NW.Models
         public Vector3 Location { get; set; }
 
         public int Score { get; set; }
+
+        public Guid Id { get; set; }
     }
 }
