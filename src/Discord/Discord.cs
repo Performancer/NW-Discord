@@ -2,6 +2,7 @@ using System;
 using Newtonsoft.Json;
 using System.IO;
 using System.Threading.Tasks;
+using System.Net.Http;
 using Discord;
 using Discord.WebSocket;
 using NW.Models;
@@ -12,6 +13,8 @@ namespace NW.Discord
     public class DiscordClient : IDiscord
     {
         private DiscordSocketClient _client;
+
+        private HttpClient _httpClient;
         private ChannelManager _channels;
         private IRepository _repository;
 
@@ -22,6 +25,7 @@ namespace NW.Discord
 
         public ChannelManager GetChannels()
         {
+            _httpClient = new HttpClient();
             var file = "discord-channels.txt";
 
             if (!File.Exists(file))
@@ -36,10 +40,13 @@ namespace NW.Discord
             return channels;
         }
 
+
+
         public async void Login()
         {
             _channels = GetChannels();
-            _client = new DiscordSocketClient();
+            var config = new DiscordSocketConfig { MessageCacheSize = 100 };
+            _client = new DiscordSocketClient(config);
 
             //  You can assign your bot token to a string, and pass that in to connect.
             //  This is, however, insecure, particularly if you plan to have your code hosted in a public repository.
@@ -47,17 +54,28 @@ namespace NW.Discord
 
             Console.WriteLine("Discord: Logging in...");
             await _client.LoginAsync(TokenType.Bot, token);
+
             Console.WriteLine("Discord: Starting...");
             await _client.StartAsync();
-            Console.WriteLine("Discord: Ready!");
+
+            _client.MessageReceived += MessageReceived;
+
+            _client.Ready += () =>
+            {
+                Console.WriteLine("Discord: Ready!");
+                return Task.CompletedTask;
+            };
+
             await Task.Delay(-1);
         }
-    
+
         public async void Notice(ulong channelId, string message)
         {
             IMessageChannel channel;
 
-            while((channel = _client.GetChannel(channelId) as IMessageChannel) == null) {
+            while ((channel = _client.GetChannel(channelId) as IMessageChannel) == null)
+            {
+
                 await Task.Delay(1000);
             }
 
@@ -68,7 +86,7 @@ namespace NW.Discord
         {
             string message = announcement.Message;
 
-            if(announcement.Important)
+            if (announcement.Important)
                 message += " @everyone";
 
             Notice(_channels.AnnouncementChannelID, message);
@@ -79,7 +97,7 @@ namespace NW.Discord
         {
             string message = chatMessage.Sender.ToString();
 
-            switch(chatMessage.Type)
+            switch (chatMessage.Type)
             {
                 case Models.MessageType.Normal: message += " says"; break;
                 case Models.MessageType.Whisper: message += " whispers"; break;
@@ -96,19 +114,19 @@ namespace NW.Discord
         {
             string message = "";
 
-            if(death.Killer != null && death.Killer.IsPlayer() && death.Killed != null && death.Killed.IsPlayer())
+            if (death.Killer != null && death.Killer.IsPlayer() && death.Killed != null && death.Killed.IsPlayer())
             {
                 message += "**PLAYER KILL:** ";
             }
 
             message += death.Killed + " was killed by ";
 
-            if(death.Killer != null)
+            if (death.Killer != null)
                 message += death.Killer + " with " + death.Weapon + " as a weapon.";
             else
                 message += death.Weapon;
 
-            if(death.FriendlyFire)
+            if (death.FriendlyFire)
                 message += " This was friendly fire.";
 
             Notice(_channels.FeedChannelID, message);
@@ -119,14 +137,36 @@ namespace NW.Discord
         {
             string message = "[" + login.Player.AccountName + "] " + login.Player;
 
-            switch(login.Type)
+            switch (login.Type)
             {
                 case LoginType.Login: message += " has logged in."; break;
                 case LoginType.Logout: message += " has logged out."; break;
             }
 
-            Notice(_channels.FeedChannelID, message);  
+            Notice(_channels.FeedChannelID, message);
             return login;
+        }
+
+        private async Task MessageReceived(SocketMessage message)
+        {
+            Console.WriteLine("> [" + "] : [" + message.Channel.Name + "] : [" + message.Author.Username + "] : " + message.Content);
+            if (message.Content == "!ping")
+            {
+                await message.Channel.SendMessageAsync("Pong!");
+            }
+
+            if (message.Channel.Id == _channels.QueryChannelID)
+            {
+                if (message.Content.StartsWith("."))
+                {
+                    string[] args = message.Content.Split(" ");
+                    Console.WriteLine("args len: " + args.Length);
+                    HttpResponseMessage response = await _httpClient.GetAsync("localhost:5000/api/Messages?killed-role=0");
+                    response.EnsureSuccessStatusCode();
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(responseBody);
+                }
+            }
         }
     }
 }
