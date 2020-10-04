@@ -26,8 +26,7 @@ namespace NW.Controllers
             [FromQuery(Name = "important")] bool? important,
             [FromQuery(Name = "from")] long fromTimestamp = long.MinValue,
             [FromQuery(Name = "to")] long toTimestamp = long.MaxValue
-        )
-        {
+        ) {
             return _repository.GetAnnouncements(important, fromTimestamp, toTimestamp);
         }
 

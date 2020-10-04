@@ -23,17 +23,15 @@ namespace NW.Controllers
 
         [HttpGet]
         public Task<Death[]> GetAll(
-
-
             [FromQuery(Name = "killer-role")] int? killerRole,
             [FromQuery(Name = "killed-role")] int? killedRole,
-            [FromQuery(Name = "minscore")] int? minScore,
-            [FromQuery(Name = "maxscore")] int? maxScore,
-            [FromQuery(Name = "fromX")] int? fromX,
-            [FromQuery(Name = "fromY")] int? fromY,
-            [FromQuery(Name = "toX")] int? toX,
-            [FromQuery(Name = "toY")] int? toY,
             [FromQuery(Name = "friendly")] bool? friendlyFire,
+            [FromQuery(Name = "minscore")] int minScore = int.MinValue,
+            [FromQuery(Name = "maxscore")] int maxScore = int.MaxValue,
+            [FromQuery(Name = "fromX")] int fromX = int.MinValue,
+            [FromQuery(Name = "fromY")] int fromY = int.MinValue,
+            [FromQuery(Name = "toX")] int toX = int.MaxValue,
+            [FromQuery(Name = "toY")] int toY = int.MaxValue,
             [FromQuery(Name = "fromTime")] long fromTimestamp = long.MinValue,
             [FromQuery(Name = "toTime")] long toTimestamp = long.MaxValue,
             [FromQuery(Name = "killer")] string killer = "",
@@ -41,8 +39,7 @@ namespace NW.Controllers
             [FromQuery(Name = "killed")] string killed = "",
             [FromQuery(Name = "killed-account")] string killedAccount = "",
             [FromQuery(Name = "weapon")] string weapon = ""
-        )
-        {
+        ) {
             return _repository.GetDeaths(
                 killerRole,
                 killedRole,
