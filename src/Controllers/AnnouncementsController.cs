@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using NW.Models;
 using NW.Repository;
 using NW.FilterAttributes;
+using NW.Discord;
 
 namespace NW.Controllers
 {
@@ -12,10 +13,12 @@ namespace NW.Controllers
     public class AnnouncementsController : Controller
     {
         private readonly IRepository _repository;
+        private readonly IDiscord _discord;
 
-        public AnnouncementsController(IRepository repository)
+        public AnnouncementsController(IRepository repository, IDiscord discord)
         {
             _repository = repository;
+            _discord = discord;
         }
 
         [HttpGet]
@@ -32,9 +35,7 @@ namespace NW.Controllers
         [ValidateModel]
         public async Task<Announcement> Post([FromBody] Announcement announcement)
         {
-            Announcement a = await _repository.AddAnnouncement(announcement);
-            //_discord.Notice(a);
-            return a;
+            return _discord.Notice(await _repository.AddAnnouncement(announcement));
         }
     }
 }

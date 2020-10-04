@@ -12,7 +12,7 @@ namespace NW.Discord
         private DiscordSocketClient _client;
         private ulong _channelID = 559740041988014082;
 
-        public async Task Login()
+        public async void Login()
         {
             _client = new DiscordSocketClient();
 
@@ -20,9 +20,11 @@ namespace NW.Discord
             //  This is, however, insecure, particularly if you plan to have your code hosted in a public repository.
             string token = File.ReadAllText("discord-key.txt");
 
+            Console.WriteLine("Discord: Logging in...");
             await _client.LoginAsync(TokenType.Bot, token);
+            Console.WriteLine("Discord: Starting...");
             await _client.StartAsync();
-
+            Console.WriteLine("Discord: Ready!");
             await Task.Delay(-1);
         }
     
@@ -40,17 +42,41 @@ namespace NW.Discord
             await channel.SendMessageAsync(message);
         }
 
+        public Announcement Notice(Announcement announcement)
+        {
+            string message = announcement.Message;
+
+            if(announcement.Important)
+                message += " @everyone";
+
+            Notice(message);
+            return announcement;
+        }
+
+        public ChatMessage Notice(ChatMessage chatMessage)
+        {
+            string message = chatMessage.Sender.ToString();
+
+            switch(chatMessage.Type)
+            {
+                case Models.MessageType.Normal: message += " says"; break;
+                case Models.MessageType.Whisper: message += " whispers"; break;
+                case Models.MessageType.Shout: message += " shouts"; break;
+            }
+
+            message += ": " + chatMessage.Message;
+
+            Notice(message);
+            return chatMessage;
+        }
+
         public Death Notice(Death death)
         {
-            string message;
+            string message = "";
 
             if(death.Killer != null && death.Killer.IsPlayer() && death.Killed != null && death.Killed.IsPlayer())
             {
-                message = "PLAYER KILL: ";
-            }
-            else
-            {
-                message = "Death: ";
+                message += "**PLAYER KILL:** ";
             }
 
             message += death.Killed + " was killed by ";
@@ -63,7 +89,7 @@ namespace NW.Discord
             if(death.FriendlyFire)
                 message += " This was friendly fire.";
 
-            Notice("**" + message + "**");
+            Notice(message);
             return death;
         }
     }

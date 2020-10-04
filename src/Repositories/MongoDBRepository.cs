@@ -2,9 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
-
 using MongoDB.Driver;
-using MongoDB.Bson;
 
 using NW.Models;
 
@@ -12,41 +10,41 @@ namespace NW.Repository
 {
     public class MongoDBRepository : IRepository
     {
-        private readonly IMongoCollection<ChatMessage> _ChatMessageCollection;
-        private readonly IMongoCollection<Death> _DeathCollection;
-        private readonly IMongoCollection<Announcement> _AnnouncementCollection;
+        private readonly IMongoCollection<ChatMessage> _chatMessageCollection;
+        private readonly IMongoCollection<Death> _deathCollection;
+        private readonly IMongoCollection<Announcement> _announcementCollection;
 
         public MongoDBRepository()
         {
             var mongoClient = new MongoClient("mongodb://localhost:27017");
             var database = mongoClient.GetDatabase("NWDB");
-            _ChatMessageCollection = database.GetCollection<ChatMessage>("ChatMessages");
-            _DeathCollection = database.GetCollection<Death>("Deaths");
-            _AnnouncementCollection = database.GetCollection<Announcement>("Announcements");
+            _chatMessageCollection = database.GetCollection<ChatMessage>("ChatMessages");
+            _deathCollection = database.GetCollection<Death>("Deaths");
+            _announcementCollection = database.GetCollection<Announcement>("Announcements");
         }
         public async Task<Announcement> AddAnnouncement(Announcement announcement)
         {
-            await _AnnouncementCollection.InsertOneAsync(announcement);
+            await _announcementCollection.InsertOneAsync(announcement);
             return announcement;
         }
 
         public async Task<ChatMessage> AddChatMessage(ChatMessage message)
         {
-            await _ChatMessageCollection.InsertOneAsync(message);
+            await _chatMessageCollection.InsertOneAsync(message);
             return message;
         }
 
         public async Task<Death> AddDeath(Death death)
         {
-            await _DeathCollection.InsertOneAsync(death);
+            await _deathCollection.InsertOneAsync(death);
             return death;
         }
 
         public async Task<Announcement[]> GetAnnouncements(
             bool? important,
             long fromTimestamp = 0,
-            long toTimestamp = long.MaxValue)
-        {
+            long toTimestamp = long.MaxValue
+        ) {
             FilterDefinition<Announcement> filter = Builders<Announcement>.Filter.And(
                 Builders<Announcement>.Filter.Gte(a => a.TimeStamp, fromTimestamp),
                 Builders<Announcement>.Filter.Lte(a => a.TimeStamp, toTimestamp)
@@ -55,7 +53,7 @@ namespace NW.Repository
             if (important != null)
                 filter &= Builders<Announcement>.Filter.Eq(a => a.Important, important);
 
-            List<Announcement> announcements = await _AnnouncementCollection.Find(filter).ToListAsync();
+            List<Announcement> announcements = await _announcementCollection.Find(filter).ToListAsync();
 
             return announcements.ToArray();
         }
@@ -71,8 +69,7 @@ namespace NW.Repository
             long toTimestamp = long.MaxValue,
             string sender = "",
             string senderAccount = ""
-        )
-        {
+        ) {
             FilterDefinition<ChatMessage> filter = Builders<ChatMessage>.Filter.And(
                 Builders<ChatMessage>.Filter.Gte(m => m.TimeStamp, fromTimestamp),
                 Builders<ChatMessage>.Filter.Lte(m => m.TimeStamp, toTimestamp)
@@ -91,7 +88,7 @@ namespace NW.Repository
                 filter &= Builders<ChatMessage>.Filter.Eq(m => m.Sender.AccountName, sender);
 
 
-            List<ChatMessage> chatMessages = await _ChatMessageCollection.Find(filter).ToListAsync();
+            List<ChatMessage> chatMessages = await _chatMessageCollection.Find(filter).ToListAsync();
 
             return chatMessages.ToArray();
         }
@@ -113,8 +110,7 @@ namespace NW.Repository
             string weapon = "",
             string killed = "",
             string killedAccount = ""
-        )
-        {
+        ) {
             FilterDefinition<Death> filter = Builders<Death>.Filter.And(
                 Builders<Death>.Filter.Gte(d => d.TimeStamp, fromTimestamp),
                 Builders<Death>.Filter.Lte(d => d.TimeStamp, toTimestamp)
@@ -162,7 +158,7 @@ namespace NW.Repository
             if (killedAccount != "")
                 filter &= Builders<Death>.Filter.Eq(d => d.Killed.AccountName, killedAccount);
 
-            List<Death> deaths = await _DeathCollection.Find(filter).ToListAsync();
+            List<Death> deaths = await _deathCollection.Find(filter).ToListAsync();
 
             return deaths.ToArray();
         }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using NW.Models;
 using NW.Repository;
 using NW.FilterAttributes;
+using NW.Discord;
 
 namespace NW.Controllers
 {

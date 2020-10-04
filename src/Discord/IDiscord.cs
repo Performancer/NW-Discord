@@ -1,8 +1,13 @@
 
 using NW.Models;
 
-public interface IDiscord
+namespace NW.Discord
 {
-    void Notice(string message);
-    Death Notice(Death death);
+    public interface IDiscord
+    {
+        void Notice(string message);
+        Announcement Notice(Announcement announcement);
+        ChatMessage Notice(ChatMessage chatMessage);
+        Death Notice(Death death);
+    }
 }

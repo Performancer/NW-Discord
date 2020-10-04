@@ -28,7 +28,6 @@ namespace NW.Repository
 
         Task<ChatMessage> AddChatMessage(ChatMessage message);
         Task<ChatMessage[]> GetChatMessages(
-
             int? senderRole,
             int? fromX,
             int? fromY,

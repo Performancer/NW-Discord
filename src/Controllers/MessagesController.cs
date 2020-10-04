@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using NW.Models;
 using NW.Repository;
 using NW.FilterAttributes;
+using NW.Discord;
 
 namespace NW.Controllers
 {
@@ -12,10 +13,12 @@ namespace NW.Controllers
     public class MessagesController : Controller
     {
         private readonly IRepository _repository;
+        private readonly IDiscord _discord;
 
-        public MessagesController(IRepository repository)
+        public MessagesController(IRepository repository, IDiscord discord)
         {
             _repository = repository;
+            _discord = discord;
         }
 
         [HttpGet]
@@ -49,9 +52,9 @@ namespace NW.Controllers
 
         [HttpPost]
         [ValidateModel]
-        public Task<ChatMessage> Post([FromBody] ChatMessage message)
+        public async Task<ChatMessage> Post([FromBody] ChatMessage message)
         {
-            return _repository.AddChatMessage(message);
+            return _discord.Notice(await _repository.AddChatMessage(message));
         }
     }
 }
