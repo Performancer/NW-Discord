@@ -28,10 +28,6 @@ namespace NW
             services.AddControllers();
             services.AddSingleton<IRepository, MongoDBRepository>();
             services.AddSingleton<IDiscord, DiscordClient>();
-
-            var provider = services.BuildServiceProvider();
-            var discord = provider.GetService<IDiscord>();
-            discord.Login();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -18,6 +18,8 @@ namespace NW.Discord
         public DiscordClient(IRepository repository)
         {
             _repository = repository;
+            Login();
+
         }
 
         public ChannelManager GetChannels()
@@ -28,7 +30,7 @@ namespace NW.Discord
                 throw new FileNotFoundException("discord-channels.txt was not found");
 
             var channels = JsonConvert.DeserializeObject<ChannelManager>(File.ReadAllText(file));
-
+            
             Console.WriteLine("Announcement Channel: " + channels.AnnouncementChannelID);
             Console.WriteLine("Feed Channel: " + channels.FeedChannelID);
             Console.WriteLine("Query Channel: " + channels.QueryChannelID);
