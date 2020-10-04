@@ -37,7 +37,7 @@ namespace NW.Discord
                 throw new FileNotFoundException("discord-channels.txt was not found");
 
             var channels = JsonConvert.DeserializeObject<ChannelManager>(File.ReadAllText(file));
-            
+
             Console.WriteLine("Announcement Channel: " + channels.AnnouncementChannelID);
             Console.WriteLine("Feed Channel: " + channels.FeedChannelID);
             Console.WriteLine("Query Channel: " + channels.QueryChannelID);
@@ -166,12 +166,12 @@ namespace NW.Discord
 
                     Death[] deaths = await _repository.GetDeaths(null, null, 0, int.MaxValue, int.MinValue, int.MinValue, int.MaxValue, int.MaxValue, null, 0, long.MaxValue, "", "", "", "", "");
 
-                    Death[] orderedDeaths = deaths.OrderByDescending<Death, long>(d => d.TimeStamp).ToArray();
+                    Death[] orderedDeaths = deaths.OrderBy<Death, long>(d => d.TimeStamp).ToArray();
 
                     string msg = "Last 10 Deaths: \n";
 
                     for (int i = 0; i < 10; i++)
-                        msg += "[" + orderedDeaths[i].TimeStamp + "] " + orderedDeaths[i].Killed + " killed " + orderedDeaths[i].Killer + " with " + orderedDeaths[i].Weapon + ".\n";
+                        msg += "[" + orderedDeaths[i].TimeStamp + "] " + orderedDeaths[i].Killer.Name + " killed " + orderedDeaths[i].Killed.Name + " with " + orderedDeaths[i].Weapon + ".\n";
 
                     await message.Channel.SendMessageAsync(msg);
 
