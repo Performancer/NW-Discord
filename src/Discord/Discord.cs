@@ -1,10 +1,15 @@
 using System;
 using Newtonsoft.Json;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Net.Http;
 using Discord;
 using Discord.WebSocket;
+
+using System.Net.Http.Headers;
+
 using NW.Models;
 using NW.Repository;
 
@@ -150,21 +155,26 @@ namespace NW.Discord
         private async Task MessageReceived(SocketMessage message)
         {
             Console.WriteLine("> [" + "] : [" + message.Channel.Name + "] : [" + message.Author.Username + "] : " + message.Content);
-            if (message.Content == "!ping")
-            {
-                await message.Channel.SendMessageAsync("Pong!");
-            }
 
             if (message.Channel.Id == _channels.QueryChannelID)
             {
-                if (message.Content.StartsWith("."))
+                if (message.Content.StartsWith("!"))
                 {
                     string[] args = message.Content.Split(" ");
                     Console.WriteLine("args len: " + args.Length);
-                    HttpResponseMessage response = await _httpClient.GetAsync("localhost:5000/api/Messages?killed-role=0");
-                    response.EnsureSuccessStatusCode();
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(responseBody);
+
+                    MongoDBRepository mongoDBRepository = new MongoDBRepository();
+                    Death[] deaths = await mongoDBRepository.GetDeaths(null, null, 0, int.MaxValue, int.MinValue, int.MinValue, int.MaxValue, int.MaxValue, null, 0, long.MaxValue, "", "", "", "", "");
+
+                    Death[] orderedDeaths = deaths.OrderBy<Death, long>(d => d.TimeStamp).ToArray();
+
+                    string msg = "Last 10 Deaths: \n";
+
+                    for (int i = 0; i < 10; i++)
+                        msg += "[" + orderedDeaths[i].TimeStamp + "] " + orderedDeaths[i].Killed + " killed " + orderedDeaths[i].Killer + " with " + orderedDeaths[i].Weapon + ".\n";
+
+                    await message.Channel.SendMessageAsync(msg);
+
                 }
             }
         }
