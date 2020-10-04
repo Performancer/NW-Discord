@@ -42,8 +42,8 @@ namespace NW.Repository
 
         public async Task<Announcement[]> GetAnnouncements(
             bool? important,
-            long fromTimestamp = 0,
-            long toTimestamp = long.MaxValue
+            long fromTimestamp,
+            long toTimestamp
         ) {
             FilterDefinition<Announcement> filter = Builders<Announcement>.Filter.And(
                 Builders<Announcement>.Filter.Gte(a => a.TimeStamp, fromTimestamp),
@@ -60,25 +60,29 @@ namespace NW.Repository
 
         public async Task<ChatMessage[]> GetChatMessages(
             int? senderRole,
-            int? fromX,
-            int? fromY,
-            int? toX,
-            int? toY,
+            int fromX,
+            int fromY,
+            int toX,
+            int toY,
             int? type,
-            long fromTimestamp = long.MinValue,
-            long toTimestamp = long.MaxValue,
-            string sender = "",
-            string senderAccount = ""
+            long fromTimestamp,
+            long toTimestamp,
+            string sender,
+            string senderAccount
         ) {
             FilterDefinition<ChatMessage> filter = Builders<ChatMessage>.Filter.And(
                 Builders<ChatMessage>.Filter.Gte(m => m.TimeStamp, fromTimestamp),
-                Builders<ChatMessage>.Filter.Lte(m => m.TimeStamp, toTimestamp)
+                Builders<ChatMessage>.Filter.Lte(m => m.TimeStamp, toTimestamp),
+                Builders<ChatMessage>.Filter.Gte(m => m.Sender.Location.X, fromX),
+                Builders<ChatMessage>.Filter.Gte(m => m.Sender.Location.Y, fromY),
+                Builders<ChatMessage>.Filter.Lte(m => m.Sender.Location.X, toX),
+                Builders<ChatMessage>.Filter.Lte(m => m.Sender.Location.Y, toY)
             );
 
             if (senderRole != null)
                 filter &= Builders<ChatMessage>.Filter.Gte(m => m.Sender.Role, (AccessRole)senderRole);
 
-            if (fromX != null)
+            if (type != null)
                 filter &= Builders<ChatMessage>.Filter.Eq(m => m.Type, (MessageType)type);
 
             if (sender != "")
@@ -86,7 +90,6 @@ namespace NW.Repository
 
             if (senderAccount != "")
                 filter &= Builders<ChatMessage>.Filter.Eq(m => m.Sender.AccountName, sender);
-
 
             List<ChatMessage> chatMessages = await _chatMessageCollection.Find(filter).ToListAsync();
 
@@ -96,24 +99,30 @@ namespace NW.Repository
         public async Task<Death[]> GetDeaths(
             int? killerRole,
             int? killedRole,
-            int? minScore,
-            int? maxScore,
-            int? fromX,
-            int? fromY,
-            int? toX,
-            int? toY,
+            int minScore,
+            int maxScore,
+            int fromX,
+            int fromY,
+            int toX,
+            int toY,
             bool? friendlyFire,
-            long fromTimestamp = long.MinValue,
-            long toTimestamp = long.MaxValue,
-            string killer = "",
-            string killerAccount = "",
-            string weapon = "",
-            string killed = "",
-            string killedAccount = ""
+            long fromTimestamp,
+            long toTimestamp,
+            string killer,
+            string killerAccount,
+            string weapon,
+            string killed,
+            string killedAccount
         ) {
             FilterDefinition<Death> filter = Builders<Death>.Filter.And(
                 Builders<Death>.Filter.Gte(d => d.TimeStamp, fromTimestamp),
-                Builders<Death>.Filter.Lte(d => d.TimeStamp, toTimestamp)
+                Builders<Death>.Filter.Lte(d => d.TimeStamp, toTimestamp),
+                Builders<Death>.Filter.Gte(d => d.Killed.Score, minScore),
+                Builders<Death>.Filter.Lte(d => d.Killed.Score, maxScore),
+                Builders<Death>.Filter.Gte(d => d.Killed.Location.X, fromX),
+                Builders<Death>.Filter.Gte(d => d.Killed.Location.Y, fromY),
+                Builders<Death>.Filter.Lte(d => d.Killed.Location.X, toX),
+                Builders<Death>.Filter.Lte(d => d.Killed.Location.Y, toY)
             );
 
             if (killerRole != null)
@@ -121,24 +130,6 @@ namespace NW.Repository
 
             if (killedRole != null)
                 filter &= Builders<Death>.Filter.Eq(d => d.Killed.Role, (AccessRole)killedRole);
-
-            if (minScore != null)
-                filter &= Builders<Death>.Filter.Gte(d => d.Killed.Score, minScore);
-
-            if (maxScore != null)
-                filter &= Builders<Death>.Filter.Lte(d => d.Killed.Score, maxScore);
-
-            if (fromX != null)
-                filter &= Builders<Death>.Filter.Gte(d => d.Killed.Location.X, fromX);
-
-            if (fromY != null)
-                filter &= Builders<Death>.Filter.Gte(d => d.Killed.Location.Y, fromY);
-
-            if (toX != null)
-                filter &= Builders<Death>.Filter.Lte(d => d.Killed.Location.X, toX);
-
-            if (toY != null)
-                filter &= Builders<Death>.Filter.Lte(d => d.Killed.Location.Y, toY);
 
             if (friendlyFire != null)
                 filter &= Builders<Death>.Filter.Eq(d => d.FriendlyFire, friendlyFire);
