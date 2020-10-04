@@ -20,6 +20,7 @@ namespace NW.Models
         public Guid Id { get; set; }
         public long TimeStamp { get; set; }
 
+        [Required(ErrorMessage = "LoginType is required")]
         [EnumDataType(typeof(LoginType))]
         public LoginType Type { get; set; }
 

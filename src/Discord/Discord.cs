@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using NW.Models;
+using NW.Repository;
 
 namespace NW.Discord
 {
@@ -12,23 +13,32 @@ namespace NW.Discord
     {
         private DiscordSocketClient _client;
         private ChannelManager _channels;
+        private IRepository _repository;
 
-        public DiscordClient()
+        public DiscordClient(IRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public ChannelManager GetChannels()
         {
             var file = "discord-channels.txt";
 
             if (!File.Exists(file))
                 throw new FileNotFoundException("discord-channels.txt was not found");
 
-            _channels = JsonConvert.DeserializeObject<ChannelManager>(File.ReadAllText(file));
+            var channels = JsonConvert.DeserializeObject<ChannelManager>(File.ReadAllText(file));
 
-            Console.WriteLine("Announcement Channel: " + _channels.AnnouncementChannelID);
-            Console.WriteLine("Feed Channel: " + _channels.FeedChannelID);
-            Console.WriteLine("Query Channel: " + _channels.QueryChannelID);
+            Console.WriteLine("Announcement Channel: " + channels.AnnouncementChannelID);
+            Console.WriteLine("Feed Channel: " + channels.FeedChannelID);
+            Console.WriteLine("Query Channel: " + channels.QueryChannelID);
+
+            return channels;
         }
 
         public async void Login()
         {
+            _channels = GetChannels();
             _client = new DiscordSocketClient();
 
             //  You can assign your bot token to a string, and pass that in to connect.
@@ -45,9 +55,6 @@ namespace NW.Discord
     
         public async void Notice(ulong channelId, string message)
         {
-            if (_client == null)
-               Login();
-
             IMessageChannel channel;
 
             while((channel = _client.GetChannel(channelId) as IMessageChannel) == null) {
@@ -108,7 +115,6 @@ namespace NW.Discord
             return death;
         }
 
-        
         public Login Notice(Login login)
         {
             string message = "[" + login.Player.AccountName + "] " + login.Player;
