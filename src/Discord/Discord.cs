@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using System.IO;
 using System.Threading.Tasks;
 using Discord;
@@ -10,7 +11,21 @@ namespace NW.Discord
     public class DiscordClient : IDiscord
     {
         private DiscordSocketClient _client;
-        private ulong _channelID = 559740041988014082;
+        private ChannelManager _channels;
+
+        public DiscordClient()
+        {
+            var file = "discord-channels.txt";
+
+            if (!File.Exists(file))
+                throw new FileNotFoundException("discord-channels.txt was not found");
+
+            _channels = JsonConvert.DeserializeObject<ChannelManager>(File.ReadAllText(file));
+
+            Console.WriteLine("Announcement Channel: " + _channels.AnnouncementChannelID);
+            Console.WriteLine("Feed Channel: " + _channels.FeedChannelID);
+            Console.WriteLine("Query Channel: " + _channels.QueryChannelID);
+        }
 
         public async void Login()
         {
@@ -28,14 +43,14 @@ namespace NW.Discord
             await Task.Delay(-1);
         }
     
-        public async void Notice(string message)
+        public async void Notice(ulong channelId, string message)
         {
             if (_client == null)
                Login();
 
             IMessageChannel channel;
 
-            while((channel = _client.GetChannel(_channelID) as IMessageChannel) == null) {
+            while((channel = _client.GetChannel(channelId) as IMessageChannel) == null) {
                 await Task.Delay(1000);
             }
 
@@ -49,7 +64,7 @@ namespace NW.Discord
             if(announcement.Important)
                 message += " @everyone";
 
-            Notice(message);
+            Notice(_channels.AnnouncementChannelID, message);
             return announcement;
         }
 
@@ -66,7 +81,7 @@ namespace NW.Discord
 
             message += ": " + chatMessage.Message;
 
-            Notice(message);
+            Notice(_channels.FeedChannelID, message);
             return chatMessage;
         }
 
@@ -89,7 +104,7 @@ namespace NW.Discord
             if(death.FriendlyFire)
                 message += " This was friendly fire.";
 
-            Notice(message);
+            Notice(_channels.FeedChannelID, message);
             return death;
         }
     }

@@ -5,7 +5,7 @@ namespace NW.Discord
 {
     public interface IDiscord
     {
-        void Notice(string message);
+        void Notice(ulong channelId, string message);
         Announcement Notice(Announcement announcement);
         ChatMessage Notice(ChatMessage chatMessage);
         Death Notice(Death death);
