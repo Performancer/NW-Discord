@@ -107,5 +107,20 @@ namespace NW.Discord
             Notice(_channels.FeedChannelID, message);
             return death;
         }
+
+        
+        public Login Notice(Login login)
+        {
+            string message = "[" + login.Player.AccountName + "] " + login.Player;
+
+            switch(login.Type)
+            {
+                case LoginType.Login: message += " has logged in."; break;
+                case LoginType.Logout: message += " has logged out."; break;
+            }
+
+            Notice(_channels.FeedChannelID, message);  
+            return login;
+        }
     }
 }
