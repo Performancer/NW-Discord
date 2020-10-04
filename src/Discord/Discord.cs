@@ -152,29 +152,188 @@ namespace NW.Discord
             return login;
         }
 
+
+        public static T ConvertTo<T>(object value)
+        {
+            return (T)Convert.ChangeType(value, typeof(T));
+        }
+
+        private void SetVariableIfFoundInQuery<T>(out T variable, string[] varNameToValuePair)
+        {
+            variable = default(T);
+
+            if (nameof(variable) == varNameToValuePair[0])
+            {
+                variable = ConvertTo<T>(varNameToValuePair[1]);
+            }
+        }
+
+        private async Task ParseQueryCommand(SocketMessage message)
+        {
+            string str = message.Content.Replace("!query ", "").ToLower();
+            string[] args = str.Split(" ");
+            Console.WriteLine("args len: " + args.Length + "\nCommands: " + str + "\n");
+
+            int? killerrole = null;
+            int? killedrole = null;
+            bool? friendlyfire = null;
+            int minscore = int.MinValue;
+            int maxscore = int.MaxValue;
+            int fromx = int.MinValue;
+            int fromy = int.MinValue;
+            int tox = int.MaxValue;
+            int toy = int.MaxValue;
+            long fromtimestamp = long.MinValue;
+            long totimestamp = long.MaxValue;
+            string killer = "";
+            string killeraccount = "";
+            string killed = "";
+            string killedaccount = "";
+            string weapon = "";
+
+
+
+
+            switch (args[0])
+            {
+                case "deaths":
+                    string[] vars = args[1].Split("&");
+
+                    foreach (string var in vars)
+                    {
+                        string[] varNameToValuePair = var.Split("=");
+                        Console.WriteLine("var: " + varNameToValuePair[0] + "\nvalue: " + varNameToValuePair[1] + "\n");
+
+                        if (nameof(killerrole) == varNameToValuePair[0])
+                            killerrole = int.Parse(varNameToValuePair[1]);
+
+                        if (nameof(killedrole) == varNameToValuePair[0])
+                            killerrole = int.Parse(varNameToValuePair[1]);
+
+                        if (nameof(friendlyfire) == varNameToValuePair[0])
+                            friendlyfire = bool.Parse(varNameToValuePair[1]);
+
+                        if (nameof(minscore) == varNameToValuePair[0])
+                            minscore = int.Parse(varNameToValuePair[1]);
+
+                        if (nameof(maxscore) == varNameToValuePair[0])
+                            maxscore = int.Parse(varNameToValuePair[1]);
+
+                        if (nameof(fromx) == varNameToValuePair[0])
+                            fromx = int.Parse(varNameToValuePair[1]);
+
+                        if (nameof(fromy) == varNameToValuePair[0])
+                            fromy = int.Parse(varNameToValuePair[1]);
+
+                        if (nameof(tox) == varNameToValuePair[0])
+                            tox = int.Parse(varNameToValuePair[1]);
+
+                        if (nameof(toy) == varNameToValuePair[0])
+                            toy = int.Parse(varNameToValuePair[1]);
+
+                        if (nameof(fromtimestamp) == varNameToValuePair[0])
+                            fromtimestamp = int.Parse(varNameToValuePair[1]);
+
+                        if (nameof(totimestamp) == varNameToValuePair[0])
+                            totimestamp = int.Parse(varNameToValuePair[1]);
+
+                        if (nameof(killer) == varNameToValuePair[0])
+                            killer = varNameToValuePair[1];
+
+                        if (nameof(killed) == varNameToValuePair[0])
+                            killed = varNameToValuePair[1];
+
+                        if (nameof(killeraccount) == varNameToValuePair[0])
+                            killeraccount = varNameToValuePair[1];
+
+                        if (nameof(killedaccount) == varNameToValuePair[0])
+                            killedaccount = varNameToValuePair[1];
+
+                        if (nameof(weapon) == varNameToValuePair[0])
+                            weapon = varNameToValuePair[1];
+                    }
+                    Console.WriteLine("Variables: {");
+                    Console.WriteLine("\tkillerrole:" + killerrole);
+                    Console.WriteLine("\tkilledrole:" + killedrole);
+                    Console.WriteLine("\tfriendlyfire:" + friendlyfire);
+                    Console.WriteLine("\tminscore:" + minscore);
+                    Console.WriteLine("\tmaxscore:" + maxscore);
+                    Console.WriteLine("\tfromx:" + fromx);
+                    Console.WriteLine("\tfromy:" + fromy);
+                    Console.WriteLine("\ttox:" + tox);
+                    Console.WriteLine("\ttoy:" + toy);
+                    Console.WriteLine("\tfromtimestamp:" + fromtimestamp);
+                    Console.WriteLine("\ttotimestamp:" + totimestamp);
+                    Console.WriteLine("\tkiller:" + killer);
+                    Console.WriteLine("\tkilleraccount:" + killeraccount);
+                    Console.WriteLine("\tkilled:" + killed);
+                    Console.WriteLine("\tkilledaccount:" + killedaccount);
+                    Console.WriteLine("\tweapon:" + weapon);
+                    Console.WriteLine("}");
+
+                    Death[] deaths = await _repository.GetDeaths(
+                        killerrole,
+                        killedrole,
+                        minscore,
+                        maxscore,
+                        fromx,
+                        fromy,
+                        tox,
+                        toy,
+                        friendlyfire,
+                        fromtimestamp,
+                        totimestamp,
+                        killer,
+                        killeraccount,
+                        weapon,
+                        killed,
+                        killedaccount
+                    );
+
+                    string deathFormatted = DeathsToString(deaths);
+                    await message.Channel.SendMessageAsync(deathFormatted);
+
+                    break;
+
+                case "logins":
+                    break;
+
+                case "announcements":
+                    break;
+
+                case "messages":
+                    break;
+            }
+        }
+
+        private async Task<Death[]> GetDeaths(string args)
+        {
+            Death[] deaths = await _repository.GetDeaths(null, null, 0, int.MaxValue, int.MinValue, int.MinValue, int.MaxValue, int.MaxValue, null, 0, long.MaxValue, "", "", "", "", "");
+            return deaths.OrderByDescending<Death, long>(d => d.TimeStamp).ToArray();
+        }
+
+        private string DeathsToString(Death[] deaths)
+        {
+            string msg = "Last 10 Deaths: \n";
+
+            for (int i = 0; i < deaths.Length; i++)
+                msg += "[" + deaths[i].TimeStamp + "] " + deaths[i].Killer.Name + " killed " + deaths[i].Killed.Name + " with " + deaths[i].Weapon + ".\n";
+
+            return msg;
+        }
+
         private async Task MessageReceived(SocketMessage message)
         {
-            Console.WriteLine("> [" + "] : [" + message.Channel.Name + "] : [" + message.Author.Username + "] : " + message.Content);
+            SocketGuildChannel channel = message.Channel as SocketGuildChannel;
+            var guild = channel.Guild;
+
+            Console.WriteLine("> [" + guild.Name + "] : [" + channel.Name + "] : [" + message.Author.Username + "] : " + message.Content);
 
             if (message.Channel.Id == _channels.QueryChannelID)
             {
-                if (message.Content.StartsWith("!"))
+                if (message.Content.StartsWith("!query"))
                 {
-                    string[] args = message.Content.Split(" ");
-                    Console.WriteLine("args len: " + args.Length);
-
-
-                    Death[] deaths = await _repository.GetDeaths(null, null, 0, int.MaxValue, int.MinValue, int.MinValue, int.MaxValue, int.MaxValue, null, 0, long.MaxValue, "", "", "", "", "");
-
-                    Death[] orderedDeaths = deaths.OrderBy<Death, long>(d => d.TimeStamp).ToArray();
-
-                    string msg = "Last 10 Deaths: \n";
-
-                    for (int i = 0; i < 10; i++)
-                        msg += "[" + orderedDeaths[i].TimeStamp + "] " + orderedDeaths[i].Killer.Name + " killed " + orderedDeaths[i].Killed.Name + " with " + orderedDeaths[i].Weapon + ".\n";
-
-                    await message.Channel.SendMessageAsync(msg);
-
+                    await ParseQueryCommand(message);
                 }
             }
         }
