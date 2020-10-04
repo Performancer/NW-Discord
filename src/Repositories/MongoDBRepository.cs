@@ -13,6 +13,7 @@ namespace NW.Repository
         private readonly IMongoCollection<ChatMessage> _chatMessageCollection;
         private readonly IMongoCollection<Death> _deathCollection;
         private readonly IMongoCollection<Announcement> _announcementCollection;
+        private readonly IMongoCollection<Login> _loginCollection;
 
         public MongoDBRepository()
         {
@@ -21,23 +22,12 @@ namespace NW.Repository
             _chatMessageCollection = database.GetCollection<ChatMessage>("ChatMessages");
             _deathCollection = database.GetCollection<Death>("Deaths");
             _announcementCollection = database.GetCollection<Announcement>("Announcements");
+            _loginCollection = database.GetCollection<Login>("Logins");
         }
         public async Task<Announcement> AddAnnouncement(Announcement announcement)
         {
             await _announcementCollection.InsertOneAsync(announcement);
             return announcement;
-        }
-
-        public async Task<ChatMessage> AddChatMessage(ChatMessage message)
-        {
-            await _chatMessageCollection.InsertOneAsync(message);
-            return message;
-        }
-
-        public async Task<Death> AddDeath(Death death)
-        {
-            await _deathCollection.InsertOneAsync(death);
-            return death;
         }
 
         public async Task<Announcement[]> GetAnnouncements(
@@ -56,6 +46,12 @@ namespace NW.Repository
             List<Announcement> announcements = await _announcementCollection.Find(filter).ToListAsync();
 
             return announcements.ToArray();
+        }
+
+        public async Task<ChatMessage> AddChatMessage(ChatMessage message)
+        {
+            await _chatMessageCollection.InsertOneAsync(message);
+            return message;
         }
 
         public async Task<ChatMessage[]> GetChatMessages(
@@ -89,11 +85,17 @@ namespace NW.Repository
                 filter &= Builders<ChatMessage>.Filter.Eq(m => m.Sender.Name, sender);
 
             if (senderAccount != "")
-                filter &= Builders<ChatMessage>.Filter.Eq(m => m.Sender.AccountName, sender);
+                filter &= Builders<ChatMessage>.Filter.Eq(m => m.Sender.AccountName, senderAccount);
 
             List<ChatMessage> chatMessages = await _chatMessageCollection.Find(filter).ToListAsync();
 
             return chatMessages.ToArray();
+        }
+
+        public async Task<Death> AddDeath(Death death)
+        {
+            await _deathCollection.InsertOneAsync(death);
+            return death;
         }
 
         public async Task<Death[]> GetDeaths(
@@ -152,6 +154,50 @@ namespace NW.Repository
             List<Death> deaths = await _deathCollection.Find(filter).ToListAsync();
 
             return deaths.ToArray();
+        }
+
+        public async Task<Login> AddLogin(Login login)
+        {
+            await _loginCollection.InsertOneAsync(login);
+            return login;
+        }
+
+        public async Task<Login[]> GetLogins(
+            int? playerRole,
+            int fromX,
+            int fromY,
+            int toX,
+            int toY,
+            int? type,
+            long fromTimestamp,
+            long toTimestamp,
+            string player,
+            string playerAccount
+        ) {
+            FilterDefinition<Login> filter = Builders<Login>.Filter.And(
+                Builders<Login>.Filter.Gte(x => x.TimeStamp, fromTimestamp),
+                Builders<Login>.Filter.Lte(x => x.TimeStamp, toTimestamp),
+                Builders<Login>.Filter.Gte(x => x.Player.Location.X, fromX),
+                Builders<Login>.Filter.Gte(x => x.Player.Location.Y, fromY),
+                Builders<Login>.Filter.Lte(x => x.Player.Location.X, toX),
+                Builders<Login>.Filter.Lte(x => x.Player.Location.Y, toY)
+            );
+
+            if (playerRole != null)
+                filter &= Builders<Login>.Filter.Gte(x => x.Player.Role, (AccessRole)playerRole);
+
+            if (type != null)
+                filter &= Builders<Login>.Filter.Eq(x => x.Type, (LoginType)type);
+
+            if (player != "")
+                filter &= Builders<Login>.Filter.Eq(x => x.Player.Name, player);
+
+            if (playerAccount != "")
+                filter &= Builders<Login>.Filter.Eq(x => x.Player.AccountName, playerAccount);
+
+            List<Login> logins = await _loginCollection.Find(filter).ToListAsync();
+
+            return logins.ToArray();
         }
     }
 }

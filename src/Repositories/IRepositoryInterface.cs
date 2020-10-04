@@ -40,6 +40,20 @@ namespace NW.Repository
             string senderAccount
         );
 
+        Task<Login> AddLogin(Login login);
+        Task<Login[]> GetLogins(
+            int? playerRole,
+            int fromX,
+            int fromY,
+            int toX,
+            int toY,
+            int? type,
+            long fromTimestamp,
+            long toTimestamp,
+            string player,
+            string playerAccount
+        );
+
         Task<Announcement> AddAnnouncement(Announcement announcement);
         Task<Announcement[]> GetAnnouncements(
             bool? important,

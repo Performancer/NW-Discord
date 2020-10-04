@@ -9,5 +9,6 @@ namespace NW.Discord
         Announcement Notice(Announcement announcement);
         ChatMessage Notice(ChatMessage chatMessage);
         Death Notice(Death death);
+        Login Notice(Login login);
     }
 }
