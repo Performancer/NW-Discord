@@ -5,6 +5,7 @@ namespace NW.Discord
 {
     public interface IDiscord
     {
+        void Login();
         void Notice(ulong channelId, string message);
         Announcement Notice(Announcement announcement);
         ChatMessage Notice(ChatMessage chatMessage);
