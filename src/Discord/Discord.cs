@@ -163,10 +163,10 @@ namespace NW.Discord
                     string[] args = message.Content.Split(" ");
                     Console.WriteLine("args len: " + args.Length);
 
-                    MongoDBRepository mongoDBRepository = new MongoDBRepository();
-                    Death[] deaths = await mongoDBRepository.GetDeaths(null, null, 0, int.MaxValue, int.MinValue, int.MinValue, int.MaxValue, int.MaxValue, null, 0, long.MaxValue, "", "", "", "", "");
 
-                    Death[] orderedDeaths = deaths.OrderBy<Death, long>(d => d.TimeStamp).ToArray();
+                    Death[] deaths = await _repository.GetDeaths(null, null, 0, int.MaxValue, int.MinValue, int.MinValue, int.MaxValue, int.MaxValue, null, 0, long.MaxValue, "", "", "", "", "");
+
+                    Death[] orderedDeaths = deaths.OrderByDescending<Death, long>(d => d.TimeStamp).ToArray();
 
                     string msg = "Last 10 Deaths: \n";
 
