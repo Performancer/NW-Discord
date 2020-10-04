@@ -32,6 +32,8 @@ namespace NW
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.ApplicationServices.GetService<IDiscord>().Login();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

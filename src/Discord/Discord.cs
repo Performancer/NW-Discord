@@ -18,8 +18,6 @@ namespace NW.Discord
         public DiscordClient(IRepository repository)
         {
             _repository = repository;
-            Login();
-
         }
 
         public ChannelManager GetChannels()
