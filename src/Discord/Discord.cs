@@ -8,10 +8,10 @@ using System.Net.Http;
 using Discord;
 using Discord.WebSocket;
 
-using System.Net.Http.Headers;
 
 using NW.Models;
 using NW.Repository;
+using NW.Discord.Parameters;
 using System.Reflection;
 
 namespace NW.Discord
@@ -172,25 +172,6 @@ namespace NW.Discord
             }
         }
 
-        public struct DiscordDeathParameters
-        {
-            public int? killerrole;
-            public int? killedrole;
-            public bool? friendlyfire;
-            public int minscore;
-            public int maxscore;
-            public int fromx;
-            public int fromy;
-            public int tox;
-            public int toy;
-            public long fromtimestamp;
-            public long totimestamp;
-            public string killer;
-            public string killeraccount;
-            public string killed;
-            public string killedaccount;
-            public string weapon;
-        }
         private void ParseVariables<T>(string arguments, ref T @params)
         {
             Console.WriteLine("arguments:" + arguments);
@@ -216,55 +197,38 @@ namespace NW.Discord
             string[] args = str.Split(" ");
             Console.WriteLine("args len: " + args.Length + "\nCommands: " + str + "\n");
 
-            var deathParams = new DiscordDeathParameters
-            {
-                killerrole = null,
-                killedrole = null,
-                friendlyfire = null,
-                minscore = int.MinValue,
-                maxscore = int.MaxValue,
-                fromx = int.MinValue,
-                fromy = int.MinValue,
-                tox = int.MaxValue,
-                toy = int.MaxValue,
-                fromtimestamp = long.MinValue,
-                totimestamp = long.MaxValue,
-                killer = "",
-                killeraccount = "",
-                killed = "",
-                killedaccount = "",
-                weapon = ""
-            };
+            int count = 10;
 
             switch (args[0])
             {
                 case "deaths":
+
+                    var deathParams = new DiscordDeathQueryParameters
+                    {
+                        killerrole = null,
+                        killedrole = null,
+                        friendlyfire = null,
+                        minscore = int.MinValue,
+                        maxscore = int.MaxValue,
+                        fromx = int.MinValue,
+                        fromy = int.MinValue,
+                        tox = int.MaxValue,
+                        toy = int.MaxValue,
+                        fromtimestamp = long.MinValue,
+                        totimestamp = long.MaxValue,
+                        killer = "",
+                        killeraccount = "",
+                        killed = "",
+                        killedaccount = "",
+                        weapon = ""
+                    };
+
                     if (args[1] != "")
                     {
                         Console.WriteLine("Something to parse");
                         ParseVariables(args[1], ref deathParams);
                     }
 
-                    /*
-                    Console.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15}",
-                        deathParams.killerrole,
-                        deathParams.killedrole,
-                        deathParams.minscore,
-                        deathParams.maxscore,
-                        deathParams.fromx,
-                        deathParams.fromy,
-                        deathParams.tox,
-                        deathParams.toy,
-                        deathParams.friendlyfire,
-                        deathParams.fromtimestamp,
-                        deathParams.totimestamp,
-                        deathParams.killer,
-                        deathParams.killeraccount,
-                        deathParams.weapon,
-                        deathParams.killed,
-                        deathParams.killedaccount
-                    );
-                    */
                     Death[] deaths = await _repository.GetDeaths(
                         deathParams.killerrole,
                         deathParams.killedrole,
@@ -284,8 +248,6 @@ namespace NW.Discord
                         deathParams.killedaccount
                     );
 
-                    int count = 10;
-
                     if (args.Length >= 3)
                     {
                         int success = 0;
@@ -302,12 +264,107 @@ namespace NW.Discord
                     break;
 
                 case "logins":
+
+                    var loginParams = new DiscordLoginQueryParameters
+                    {
+                        playerRole = null,
+                        type = null,
+                        fromTimestamp = long.MinValue,
+                        toTimestamp = long.MaxValue,
+                        fromX = int.MinValue,
+                        fromY = int.MinValue,
+                        toX = int.MaxValue,
+                        toY = int.MaxValue,
+                        player = "",
+                        playerAccount = ""
+                    };
+
+                    if (args[1] != "")
+                    {
+                        Console.WriteLine("Something to parse");
+                        ParseVariables(args[1], ref loginParams);
+                    }
+
+                    Login[] logins = await _repository.GetLogins(
+                        loginParams.playerRole,
+                        loginParams.fromX,
+                        loginParams.fromY,
+                        loginParams.toX,
+                        loginParams.toY,
+                        loginParams.type,
+                        loginParams.fromTimestamp,
+                        loginParams.toTimestamp,
+                        loginParams.player,
+                        loginParams.playerAccount
+                    );
+
+                    string loginsFormatted = LoginsToString(logins.ToList().TakeLast(count).ToArray());
+                    await message.Channel.SendMessageAsync(loginsFormatted);
+
                     break;
 
                 case "announcements":
+
+                    var announcementParams = new DiscordAnnouncementQueryParameters
+                    {
+                        important = null,
+                        fromTimestamp = long.MinValue,
+                        toTimestamp = long.MaxValue
+                    };
+
+                    if (args[1] != "")
+                    {
+                        Console.WriteLine("Something to parse");
+                        ParseVariables(args[1], ref announcementParams);
+                    }
+
+                    Announcement[] announcements = await _repository.GetAnnouncements(
+                        announcementParams.important,
+                        announcementParams.fromTimestamp,
+                        announcementParams.toTimestamp
+                    );
+
+                    string announcementsFormatted = AnnouncementsToString(announcements.ToList().TakeLast(count).ToArray());
+                    await message.Channel.SendMessageAsync(announcementsFormatted);
                     break;
 
                 case "messages":
+
+                    var messageParams = new DiscordMessageQueryParameters
+                    {
+                        senderRole = null,
+                        type = null,
+                        fromTimestamp = long.MinValue,
+                        toTimestamp = long.MaxValue,
+                        fromX = int.MinValue,
+                        fromY = int.MinValue,
+                        toX = int.MaxValue,
+                        toY = int.MaxValue,
+                        sender = "",
+                        senderAccount = ""
+                    };
+
+                    if (args[1] != "")
+                    {
+                        Console.WriteLine("Something to parse");
+                        ParseVariables(args[1], ref messageParams);
+                    }
+
+                    ChatMessage[] messages = await _repository.GetChatMessages(
+                        messageParams.senderRole,
+                        messageParams.fromX,
+                        messageParams.fromY,
+                        messageParams.toX,
+                        messageParams.toY,
+                        messageParams.type,
+                        messageParams.fromTimestamp,
+                        messageParams.toTimestamp,
+                        messageParams.sender,
+                        messageParams.senderAccount
+                    );
+
+                    string messagesFormatted = ChatMessagesToString(messages.ToList().TakeLast(count).ToArray());
+                    await message.Channel.SendMessageAsync(messagesFormatted);
                     break;
             }
         }
@@ -325,18 +382,40 @@ namespace NW.Discord
             string msg = "Last " + deaths.Length + " Deaths: \n";
 
             for (int i = deaths.Length - 1; i >= 0; --i)
-                msg += (deaths.Length - i) + "\t[" + UnixTimeStampToDateTime(deaths[i].TimeStamp) + "] " + deaths[i].Killer.Name + " killed " + deaths[i].Killed.Name + " with " + deaths[i].Weapon + ".\n";
+                msg += (deaths.Length - i) + "\t[" + UnixTimeStampToDateTime(deaths[i].TimeStamp) + "] " + deaths[i].Killer.Name + "(" + deaths[i].Killer.AccountName + ") killed " + deaths[i].Killed.Name + "(" + deaths[i].Killed.AccountName + ") with " + deaths[i].Weapon + ".\n";
 
             return msg;
         }
 
-        private string MessagesToString(ChatMessage[] messages)
+        private string ChatMessagesToString(ChatMessage[] messages)
         {
             Console.WriteLine("Messages: " + messages.Length);
             string msg = "Last " + messages.Length + " Messages: \n";
 
             for (int i = messages.Length - 1; i >= 0; --i)
-                msg += (messages.Length - i) + "\t[" + UnixTimeStampToDateTime(messages[i].TimeStamp) + "] Type:[" + messages[i].Type.ToString() + "]" + messages[i].Sender.Name + ": " + messages[i].Message + " with " + ".\n";
+                msg += (messages.Length - i) + "\t[" + UnixTimeStampToDateTime(messages[i].TimeStamp) + "] [Type:" + messages[i].Type.ToString() + "] " + messages[i].Sender.Name + " > " + messages[i].Message + "\n";
+
+            return msg;
+        }
+
+        private string LoginsToString(Login[] logins)
+        {
+            Console.WriteLine("Messages: " + logins.Length);
+            string msg = "Last " + logins.Length + " Messages: \n";
+
+            for (int i = logins.Length - 1; i >= 0; --i)
+                msg += (logins.Length - i) + "\t[" + UnixTimeStampToDateTime(logins[i].TimeStamp) + "] [Type:" + logins[i].Type.ToString() + "] " + logins[i].Player + "\n";
+
+            return msg;
+        }
+
+        private string AnnouncementsToString(Announcement[] announcements)
+        {
+            Console.WriteLine("Messages: " + announcements.Length);
+            string msg = "Last " + announcements.Length + " Messages: \n";
+
+            for (int i = announcements.Length - 1; i >= 0; --i)
+                msg += (announcements.Length - i) + "\t[" + UnixTimeStampToDateTime(announcements[i].TimeStamp) + "] [Important:" + announcements[i].Important.ToString() + "] " + announcements[i].Message + "\n";
 
             return msg;
         }
