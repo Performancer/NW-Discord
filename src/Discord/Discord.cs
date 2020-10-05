@@ -223,7 +223,7 @@ namespace NW.Discord
                         weapon = ""
                     };
 
-                    if (args[1] != "")
+                    if (args.Length >= 2 && args[1] != "")
                     {
                         Console.WriteLine("Something to parse");
                         ParseVariables(args[1], ref deathParams);
@@ -267,35 +267,35 @@ namespace NW.Discord
 
                     var loginParams = new DiscordLoginQueryParameters
                     {
-                        playerRole = null,
+                        playerrole = null,
                         type = null,
-                        fromTimestamp = long.MinValue,
-                        toTimestamp = long.MaxValue,
-                        fromX = int.MinValue,
-                        fromY = int.MinValue,
-                        toX = int.MaxValue,
-                        toY = int.MaxValue,
+                        fromtimestamp = long.MinValue,
+                        totimestamp = long.MaxValue,
+                        fromx = int.MinValue,
+                        fromy = int.MinValue,
+                        tox = int.MaxValue,
+                        toy = int.MaxValue,
                         player = "",
-                        playerAccount = ""
+                        playeraccount = ""
                     };
 
-                    if (args[1] != "")
+                    if (args.Length >= 2 && args[1] != "")
                     {
                         Console.WriteLine("Something to parse");
                         ParseVariables(args[1], ref loginParams);
                     }
 
                     Login[] logins = await _repository.GetLogins(
-                        loginParams.playerRole,
-                        loginParams.fromX,
-                        loginParams.fromY,
-                        loginParams.toX,
-                        loginParams.toY,
+                        loginParams.playerrole,
+                        loginParams.fromx,
+                        loginParams.fromy,
+                        loginParams.tox,
+                        loginParams.toy,
                         loginParams.type,
-                        loginParams.fromTimestamp,
-                        loginParams.toTimestamp,
+                        loginParams.fromtimestamp,
+                        loginParams.totimestamp,
                         loginParams.player,
-                        loginParams.playerAccount
+                        loginParams.playeraccount
                     );
 
                     string loginsFormatted = LoginsToString(logins.ToList().TakeLast(count).ToArray());
@@ -308,11 +308,11 @@ namespace NW.Discord
                     var announcementParams = new DiscordAnnouncementQueryParameters
                     {
                         important = null,
-                        fromTimestamp = long.MinValue,
-                        toTimestamp = long.MaxValue
+                        fromtimestamp = long.MinValue,
+                        totimestamp = long.MaxValue
                     };
 
-                    if (args[1] != "")
+                    if (args.Length >= 2 && args[1] != "")
                     {
                         Console.WriteLine("Something to parse");
                         ParseVariables(args[1], ref announcementParams);
@@ -320,8 +320,8 @@ namespace NW.Discord
 
                     Announcement[] announcements = await _repository.GetAnnouncements(
                         announcementParams.important,
-                        announcementParams.fromTimestamp,
-                        announcementParams.toTimestamp
+                        announcementParams.fromtimestamp,
+                        announcementParams.totimestamp
                     );
 
                     string announcementsFormatted = AnnouncementsToString(announcements.ToList().TakeLast(count).ToArray());
@@ -332,35 +332,35 @@ namespace NW.Discord
 
                     var messageParams = new DiscordMessageQueryParameters
                     {
-                        senderRole = null,
+                        senderrole = null,
                         type = null,
-                        fromTimestamp = long.MinValue,
-                        toTimestamp = long.MaxValue,
-                        fromX = int.MinValue,
-                        fromY = int.MinValue,
-                        toX = int.MaxValue,
-                        toY = int.MaxValue,
+                        fromtimestamp = long.MinValue,
+                        totimestamp = long.MaxValue,
+                        fromx = int.MinValue,
+                        fromy = int.MinValue,
+                        tox = int.MaxValue,
+                        toy = int.MaxValue,
                         sender = "",
-                        senderAccount = ""
+                        senderaccount = ""
                     };
 
-                    if (args[1] != "")
+                    if (args.Length >= 2 && args[1] != "")
                     {
                         Console.WriteLine("Something to parse");
                         ParseVariables(args[1], ref messageParams);
                     }
 
                     ChatMessage[] messages = await _repository.GetChatMessages(
-                        messageParams.senderRole,
-                        messageParams.fromX,
-                        messageParams.fromY,
-                        messageParams.toX,
-                        messageParams.toY,
+                        messageParams.senderrole,
+                        messageParams.fromx,
+                        messageParams.fromy,
+                        messageParams.tox,
+                        messageParams.toy,
                         messageParams.type,
-                        messageParams.fromTimestamp,
-                        messageParams.toTimestamp,
+                        messageParams.fromtimestamp,
+                        messageParams.totimestamp,
                         messageParams.sender,
-                        messageParams.senderAccount
+                        messageParams.senderaccount
                     );
 
                     string messagesFormatted = ChatMessagesToString(messages.ToList().TakeLast(count).ToArray());
@@ -380,10 +380,10 @@ namespace NW.Discord
         {
             Console.WriteLine("Deaths: " + deaths.Length);
             string msg = "Last " + deaths.Length + " Deaths: \n";
-
+            msg += "```css\n";
             for (int i = deaths.Length - 1; i >= 0; --i)
                 msg += (deaths.Length - i) + "\t[" + UnixTimeStampToDateTime(deaths[i].TimeStamp) + "] " + deaths[i].Killer.Name + "(" + deaths[i].Killer.AccountName + ") killed " + deaths[i].Killed.Name + "(" + deaths[i].Killed.AccountName + ") with " + deaths[i].Weapon + ".\n";
-
+            msg += "```";
             return msg;
         }
 
@@ -391,10 +391,10 @@ namespace NW.Discord
         {
             Console.WriteLine("Messages: " + messages.Length);
             string msg = "Last " + messages.Length + " Messages: \n";
-
+            msg += "```css\n";
             for (int i = messages.Length - 1; i >= 0; --i)
                 msg += (messages.Length - i) + "\t[" + UnixTimeStampToDateTime(messages[i].TimeStamp) + "] [Type:" + messages[i].Type.ToString() + "] " + messages[i].Sender.Name + " > " + messages[i].Message + "\n";
-
+            msg += "```";
             return msg;
         }
 
@@ -402,10 +402,10 @@ namespace NW.Discord
         {
             Console.WriteLine("Messages: " + logins.Length);
             string msg = "Last " + logins.Length + " Messages: \n";
-
+            msg += "```css\n";
             for (int i = logins.Length - 1; i >= 0; --i)
                 msg += (logins.Length - i) + "\t[" + UnixTimeStampToDateTime(logins[i].TimeStamp) + "] [Type:" + logins[i].Type.ToString() + "] " + logins[i].Player + "\n";
-
+            msg += "```";
             return msg;
         }
 
@@ -413,10 +413,10 @@ namespace NW.Discord
         {
             Console.WriteLine("Messages: " + announcements.Length);
             string msg = "Last " + announcements.Length + " Messages: \n";
-
+            msg += "```css\n";
             for (int i = announcements.Length - 1; i >= 0; --i)
                 msg += (announcements.Length - i) + "\t[" + UnixTimeStampToDateTime(announcements[i].TimeStamp) + "] [Important:" + announcements[i].Important.ToString() + "] " + announcements[i].Message + "\n";
-
+            msg += "```";
             return msg;
         }
 

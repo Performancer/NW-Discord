@@ -23,35 +23,35 @@ namespace NW.Discord.Parameters
     public struct DiscordAnnouncementQueryParameters
     {
         public bool? important;
-        public long fromTimestamp;
-        public long toTimestamp;
+        public long fromtimestamp;
+        public long totimestamp;
     }
 
     public struct DiscordLoginQueryParameters
     {
-        public int? playerRole;
+        public int? playerrole;
         public int? type;
-        public long fromTimestamp;
-        public long toTimestamp;
-        public int fromX;
-        public int fromY;
-        public int toX;
-        public int toY;
+        public long fromtimestamp;
+        public long totimestamp;
+        public int fromx;
+        public int fromy;
+        public int tox;
+        public int toy;
         public string player;
-        public string playerAccount;
+        public string playeraccount;
     }
 
     public struct DiscordMessageQueryParameters
     {
-        public int? senderRole;
+        public int? senderrole;
         public int? type;
-        public long fromTimestamp;
-        public long toTimestamp;
-        public int fromX;
-        public int fromY;
-        public int toX;
-        public int toY;
+        public long fromtimestamp;
+        public long totimestamp;
+        public int fromx;
+        public int fromy;
+        public int tox;
+        public int toy;
         public string sender;
-        public string senderAccount;
+        public string senderaccount;
     }
 }
