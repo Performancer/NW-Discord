@@ -12,6 +12,7 @@ using System.Net.Http.Headers;
 
 using NW.Models;
 using NW.Repository;
+using System.Reflection;
 
 namespace NW.Discord
 {
@@ -50,8 +51,7 @@ namespace NW.Discord
         public async void Login()
         {
             _channels = GetChannels();
-            var config = new DiscordSocketConfig { MessageCacheSize = 100 };
-            _client = new DiscordSocketClient(config);
+            _client = new DiscordSocketClient(new DiscordSocketConfig { MessageCacheSize = 100 });
 
             //  You can assign your bot token to a string, and pass that in to connect.
             //  This is, however, insecure, particularly if you plan to have your code hosted in a public repository.
@@ -158,14 +158,56 @@ namespace NW.Discord
             return (T)Convert.ChangeType(value, typeof(T));
         }
 
-        private void SetVariableIfFoundInQuery<T>(out T variable, string[] varNameToValuePair)
+        private void SetVariableIfFoundInQuery<T, Y>(ref Y @params, string fieldName, T fieldValue, string[] varNameToValuePair)
         {
-            variable = default(T);
 
-            if (nameof(variable) == varNameToValuePair[0])
+            if (fieldName == varNameToValuePair[0])
             {
-                variable = ConvertTo<T>(varNameToValuePair[1]);
+                var field = @params.GetType().GetField(fieldName);
+                var newValue = ConvertTo<T>(varNameToValuePair[1]);
+
+                TypedReference tr = __makeref(@params);
+                field.SetValueDirect(tr, newValue);
+
             }
+        }
+
+        public struct DiscordDeathParameters
+        {
+            public int? killerrole;
+            public int? killedrole;
+            public bool? friendlyfire;
+            public int minscore;
+            public int maxscore;
+            public int fromx;
+            public int fromy;
+            public int tox;
+            public int toy;
+            public long fromtimestamp;
+            public long totimestamp;
+            public string killer;
+            public string killeraccount;
+            public string killed;
+            public string killedaccount;
+            public string weapon;
+        }
+        private void ParseVariables<T>(string arguments, ref T @params)
+        {
+            Console.WriteLine("arguments:" + arguments);
+            string[] vars = arguments.Split("&");
+
+            foreach (string var in vars)
+            {
+                string[] varNameToValuePair = var.Split("=");
+                Console.WriteLine("var: " + varNameToValuePair[0] + "\nvalue: " + varNameToValuePair[1] + "\n");
+
+                foreach (FieldInfo field in typeof(T).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
+                {
+                    SetVariableIfFoundInQuery(ref @params, field.Name, field.GetValue(@params), varNameToValuePair);
+                    Console.WriteLine("{0} : {1}", field.Name, field.GetValue(@params));
+                }
+            }
+
         }
 
         private async Task ParseQueryCommand(SocketMessage message)
@@ -174,123 +216,87 @@ namespace NW.Discord
             string[] args = str.Split(" ");
             Console.WriteLine("args len: " + args.Length + "\nCommands: " + str + "\n");
 
-            int? killerrole = null;
-            int? killedrole = null;
-            bool? friendlyfire = null;
-            int minscore = int.MinValue;
-            int maxscore = int.MaxValue;
-            int fromx = int.MinValue;
-            int fromy = int.MinValue;
-            int tox = int.MaxValue;
-            int toy = int.MaxValue;
-            long fromtimestamp = long.MinValue;
-            long totimestamp = long.MaxValue;
-            string killer = "";
-            string killeraccount = "";
-            string killed = "";
-            string killedaccount = "";
-            string weapon = "";
-
-
-
+            var deathParams = new DiscordDeathParameters
+            {
+                killerrole = null,
+                killedrole = null,
+                friendlyfire = null,
+                minscore = int.MinValue,
+                maxscore = int.MaxValue,
+                fromx = int.MinValue,
+                fromy = int.MinValue,
+                tox = int.MaxValue,
+                toy = int.MaxValue,
+                fromtimestamp = long.MinValue,
+                totimestamp = long.MaxValue,
+                killer = "",
+                killeraccount = "",
+                killed = "",
+                killedaccount = "",
+                weapon = ""
+            };
 
             switch (args[0])
             {
                 case "deaths":
-                    string[] vars = args[1].Split("&");
-
-                    foreach (string var in vars)
+                    if (args[1] != "")
                     {
-                        string[] varNameToValuePair = var.Split("=");
-                        Console.WriteLine("var: " + varNameToValuePair[0] + "\nvalue: " + varNameToValuePair[1] + "\n");
-
-                        if (nameof(killerrole) == varNameToValuePair[0])
-                            killerrole = int.Parse(varNameToValuePair[1]);
-
-                        if (nameof(killedrole) == varNameToValuePair[0])
-                            killerrole = int.Parse(varNameToValuePair[1]);
-
-                        if (nameof(friendlyfire) == varNameToValuePair[0])
-                            friendlyfire = bool.Parse(varNameToValuePair[1]);
-
-                        if (nameof(minscore) == varNameToValuePair[0])
-                            minscore = int.Parse(varNameToValuePair[1]);
-
-                        if (nameof(maxscore) == varNameToValuePair[0])
-                            maxscore = int.Parse(varNameToValuePair[1]);
-
-                        if (nameof(fromx) == varNameToValuePair[0])
-                            fromx = int.Parse(varNameToValuePair[1]);
-
-                        if (nameof(fromy) == varNameToValuePair[0])
-                            fromy = int.Parse(varNameToValuePair[1]);
-
-                        if (nameof(tox) == varNameToValuePair[0])
-                            tox = int.Parse(varNameToValuePair[1]);
-
-                        if (nameof(toy) == varNameToValuePair[0])
-                            toy = int.Parse(varNameToValuePair[1]);
-
-                        if (nameof(fromtimestamp) == varNameToValuePair[0])
-                            fromtimestamp = int.Parse(varNameToValuePair[1]);
-
-                        if (nameof(totimestamp) == varNameToValuePair[0])
-                            totimestamp = int.Parse(varNameToValuePair[1]);
-
-                        if (nameof(killer) == varNameToValuePair[0])
-                            killer = varNameToValuePair[1];
-
-                        if (nameof(killed) == varNameToValuePair[0])
-                            killed = varNameToValuePair[1];
-
-                        if (nameof(killeraccount) == varNameToValuePair[0])
-                            killeraccount = varNameToValuePair[1];
-
-                        if (nameof(killedaccount) == varNameToValuePair[0])
-                            killedaccount = varNameToValuePair[1];
-
-                        if (nameof(weapon) == varNameToValuePair[0])
-                            weapon = varNameToValuePair[1];
+                        Console.WriteLine("Something to parse");
+                        ParseVariables(args[1], ref deathParams);
                     }
-                    Console.WriteLine("Variables: {");
-                    Console.WriteLine("\tkillerrole:" + killerrole);
-                    Console.WriteLine("\tkilledrole:" + killedrole);
-                    Console.WriteLine("\tfriendlyfire:" + friendlyfire);
-                    Console.WriteLine("\tminscore:" + minscore);
-                    Console.WriteLine("\tmaxscore:" + maxscore);
-                    Console.WriteLine("\tfromx:" + fromx);
-                    Console.WriteLine("\tfromy:" + fromy);
-                    Console.WriteLine("\ttox:" + tox);
-                    Console.WriteLine("\ttoy:" + toy);
-                    Console.WriteLine("\tfromtimestamp:" + fromtimestamp);
-                    Console.WriteLine("\ttotimestamp:" + totimestamp);
-                    Console.WriteLine("\tkiller:" + killer);
-                    Console.WriteLine("\tkilleraccount:" + killeraccount);
-                    Console.WriteLine("\tkilled:" + killed);
-                    Console.WriteLine("\tkilledaccount:" + killedaccount);
-                    Console.WriteLine("\tweapon:" + weapon);
-                    Console.WriteLine("}");
 
+                    /*
+                    Console.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15}",
+                        deathParams.killerrole,
+                        deathParams.killedrole,
+                        deathParams.minscore,
+                        deathParams.maxscore,
+                        deathParams.fromx,
+                        deathParams.fromy,
+                        deathParams.tox,
+                        deathParams.toy,
+                        deathParams.friendlyfire,
+                        deathParams.fromtimestamp,
+                        deathParams.totimestamp,
+                        deathParams.killer,
+                        deathParams.killeraccount,
+                        deathParams.weapon,
+                        deathParams.killed,
+                        deathParams.killedaccount
+                    );
+                    */
                     Death[] deaths = await _repository.GetDeaths(
-                        killerrole,
-                        killedrole,
-                        minscore,
-                        maxscore,
-                        fromx,
-                        fromy,
-                        tox,
-                        toy,
-                        friendlyfire,
-                        fromtimestamp,
-                        totimestamp,
-                        killer,
-                        killeraccount,
-                        weapon,
-                        killed,
-                        killedaccount
+                        deathParams.killerrole,
+                        deathParams.killedrole,
+                        deathParams.minscore,
+                        deathParams.maxscore,
+                        deathParams.fromx,
+                        deathParams.fromy,
+                        deathParams.tox,
+                        deathParams.toy,
+                        deathParams.friendlyfire,
+                        deathParams.fromtimestamp,
+                        deathParams.totimestamp,
+                        deathParams.killer,
+                        deathParams.killeraccount,
+                        deathParams.weapon,
+                        deathParams.killed,
+                        deathParams.killedaccount
                     );
 
-                    string deathFormatted = DeathsToString(deaths);
+                    int count = 10;
+
+                    if (args.Length >= 3)
+                    {
+                        int success = 0;
+                        if (int.TryParse(args[2], out success))
+                        {
+                            count = int.Parse(args[2]);
+                        }
+                    }
+
+
+                    string deathFormatted = DeathsToString(deaths.ToList().TakeLast(count).ToArray());
                     await message.Channel.SendMessageAsync(deathFormatted);
 
                     break;
@@ -306,18 +312,31 @@ namespace NW.Discord
             }
         }
 
-        private async Task<Death[]> GetDeaths(string args)
+        public static DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
-            Death[] deaths = await _repository.GetDeaths(null, null, 0, int.MaxValue, int.MinValue, int.MinValue, int.MaxValue, int.MaxValue, null, 0, long.MaxValue, "", "", "", "", "");
-            return deaths.OrderByDescending<Death, long>(d => d.TimeStamp).ToArray();
+            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            return dtDateTime;
         }
 
         private string DeathsToString(Death[] deaths)
         {
-            string msg = "Last 10 Deaths: \n";
+            Console.WriteLine("Deaths: " + deaths.Length);
+            string msg = "Last " + deaths.Length + " Deaths: \n";
 
-            for (int i = 0; i < deaths.Length; i++)
-                msg += "[" + deaths[i].TimeStamp + "] " + deaths[i].Killer.Name + " killed " + deaths[i].Killed.Name + " with " + deaths[i].Weapon + ".\n";
+            for (int i = deaths.Length - 1; i >= 0; --i)
+                msg += (deaths.Length - i) + "\t[" + UnixTimeStampToDateTime(deaths[i].TimeStamp) + "] " + deaths[i].Killer.Name + " killed " + deaths[i].Killed.Name + " with " + deaths[i].Weapon + ".\n";
+
+            return msg;
+        }
+
+        private string MessagesToString(ChatMessage[] messages)
+        {
+            Console.WriteLine("Messages: " + messages.Length);
+            string msg = "Last " + messages.Length + " Messages: \n";
+
+            for (int i = messages.Length - 1; i >= 0; --i)
+                msg += (messages.Length - i) + "\t[" + UnixTimeStampToDateTime(messages[i].TimeStamp) + "] Type:[" + messages[i].Type.ToString() + "]" + messages[i].Sender.Name + ": " + messages[i].Message + " with " + ".\n";
 
             return msg;
         }
