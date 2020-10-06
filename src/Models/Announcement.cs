@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NW.Models
 {
-    public class Announcement
+    public class Announcement : ITimestampable
     {
         public Announcement()
         {
@@ -20,5 +20,15 @@ namespace NW.Models
         public string Message { get; set; }
 
         public bool Important { get; set; }
+
+        public long GetTimestamp()
+        {
+            return TimeStamp;
+        }
+
+        public override string ToString()
+        {
+            return "[Important:" + Important + "] " + Message;
+        }
     }
 }

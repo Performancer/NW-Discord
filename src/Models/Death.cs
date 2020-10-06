@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NW.Models
 {
-    public class Death
+    public class Death : ITimestampable
     {
         public Death()
         {
@@ -25,5 +25,15 @@ namespace NW.Models
         public string Weapon { get; set; }
 
         public bool FriendlyFire { get; set; }
+
+        public long GetTimestamp()
+        {
+            return TimeStamp;
+        }
+
+        public override string ToString()
+        {
+            return Killer.Name + " (" + Killer.AccountName + ") killed " + Killed.Name + " (" + Killed.AccountName + ") with " + Weapon;
+        }
     }
 }

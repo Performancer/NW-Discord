@@ -9,7 +9,7 @@ namespace NW.Models
         Logout
     }
 
-    public class Login
+    public class Login : ITimestampable
     {
         public Login()
         {
@@ -26,5 +26,15 @@ namespace NW.Models
 
         [Required(ErrorMessage = "Player is required")]
         public Character Player { get; set; }
+
+        public long GetTimestamp()
+        {
+            return TimeStamp;
+        }
+
+        public override string ToString()
+        {
+            return "[Type:" + Type + "] " + Player;
+        }
     }
 }
