@@ -31,7 +31,7 @@ namespace NW.Repository
             return announcement;
         }
 
-        public async Task<Announcement[]> GetAnnouncements(AnnouncementQuery query)
+        public async Task<Announcement[]> GetAnnouncements(AnnouncementQuery query, int? limit = null)
         {
             FilterDefinition<Announcement> filter = Builders<Announcement>.Filter.Empty;
 
@@ -44,7 +44,12 @@ namespace NW.Repository
             if (query.Important != null)
                 filter &= Builders<Announcement>.Filter.Eq(a => a.Important, query.Important);
 
-            List<Announcement> announcements = await _announcementCollection.Find(filter).ToListAsync();
+            var find = _announcementCollection.Find(filter);
+
+            if(limit != null)
+                find = find.Limit(limit);
+
+            List<Announcement> announcements = await find.ToListAsync();
 
             return announcements.ToArray();
         }
@@ -55,7 +60,7 @@ namespace NW.Repository
             return message;
         }
 
-        public async Task<ChatMessage[]> GetChatMessages(MessageQuery query)
+        public async Task<ChatMessage[]> GetChatMessages(MessageQuery query, int? limit = null)
         {
             FilterDefinition<ChatMessage> filter = Builders<ChatMessage>.Filter.Empty;
 
@@ -89,7 +94,12 @@ namespace NW.Repository
             if (query.SenderAccount != null)
                 filter &= Builders<ChatMessage>.Filter.Eq(m => m.Sender.AccountName, query.SenderAccount);
 
-            List<ChatMessage> chatMessages = await _chatMessageCollection.Find(filter).ToListAsync();
+            var find = _chatMessageCollection.Find(filter);
+
+            if(limit != null)
+                find = find.Limit(limit);
+
+            List<ChatMessage> chatMessages = await find.ToListAsync();
 
             return chatMessages.ToArray();
         }
@@ -100,9 +110,8 @@ namespace NW.Repository
             return death;
         }
 
-        public async Task<Death[]> GetDeaths(DeathQuery query) {
-            Console.WriteLine("haetaan");
-
+        public async Task<Death[]> GetDeaths(DeathQuery query, int? limit = null)
+        {
             FilterDefinition<Death> filter = Builders<Death>.Filter.Empty;
             
             if(query.FromTimestamp != null)
@@ -153,9 +162,12 @@ namespace NW.Repository
             if (query.KilledAccount != null)
                 filter &= Builders<Death>.Filter.Eq(d => d.Killed.AccountName, query.KilledAccount);
 
-            List<Death> deaths = await _deathCollection.Find(filter).ToListAsync();
+            var find = _deathCollection.Find(filter);
 
-            Console.WriteLine("haettiin");
+            if(limit != null)
+                find = find.Limit(limit);
+
+            List<Death> deaths = await find.ToListAsync();
 
             return deaths.ToArray();
         }
@@ -166,7 +178,8 @@ namespace NW.Repository
             return login;
         }
 
-        public async Task<Login[]> GetLogins(LoginQuery query) {
+        public async Task<Login[]> GetLogins(LoginQuery query, int? limit = null)
+        {
             FilterDefinition<Login> filter = Builders<Login>.Filter.Empty;
 
             if (query.FromTimestamp != null)
@@ -199,7 +212,12 @@ namespace NW.Repository
             if (query.PlayerAccount != null)
                 filter &= Builders<Login>.Filter.Eq(x => x.Player.AccountName, query.PlayerAccount);
 
-            List<Login> logins = await _loginCollection.Find(filter).ToListAsync();
+            var find = _loginCollection.Find(filter);
+
+            if(limit != null)
+                find = find.Limit(limit);
+
+            List<Login> logins = await find.ToListAsync();
 
             return logins.ToArray();
         }

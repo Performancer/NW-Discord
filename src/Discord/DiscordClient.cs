@@ -89,17 +89,24 @@ namespace NW.Discord
 
         private const string COMMAND = "!q";
 
-        private string GetCommandType(string message, out string query)
+        private string GetCommandType(string message, out string query, out int limit)
         {
             string[] arr = message.Split(' ');
-
-            if(arr.Length == 0 || arr.Length > 2)
+            
+            if(arr.Length == 0 || arr.Length > 3)
                 throw new InvalidQueryException();
 
-            if(arr.Length == 2)
-                query = arr[1];
+            if(arr.Length == 3)
+            {
+                if (!int.TryParse(arr[2], out limit))
+                    throw new InvalidQueryException();
+            }
             else
-                query = "";
+            {
+                limit = 10;
+            }
+
+            query = arr.Length == 2 ? arr[1] : "";
 
             return arr[0];
         }
@@ -112,34 +119,34 @@ namespace NW.Discord
             {
                 message = message.Substring(COMMAND.Length).TrimStart();
                 
-                string type = GetCommandType(message, out string query);
+                string type = GetCommandType(message, out string query, out int limit);
 
                 switch(type)
                 {
                     case "deaths": 
                     {
                         var q = query != "" ? JsonConvert.DeserializeObject<DeathQuery>(query) : new DeathQuery();
-                        Death[] deaths = await _repository.GetDeaths(q);
+                        Death[] deaths = await _repository.GetDeaths(q, limit);
                         return ListTimestampables(deaths);
                     }
                     case "announcements": 
                     {
                         var q = query != "" ? JsonConvert.DeserializeObject<AnnouncementQuery>(query) : new AnnouncementQuery();
-                        Announcement[] announcements = await _repository.GetAnnouncements(q);
+                        Announcement[] announcements = await _repository.GetAnnouncements(q, limit);
 
                         return ListTimestampables(announcements);
                     }
                     case "messages": 
                     {
                         var q = query != "" ? JsonConvert.DeserializeObject<MessageQuery>(query) : new MessageQuery();
-                        ChatMessage[] messages = await _repository.GetChatMessages(q);
+                        ChatMessage[] messages = await _repository.GetChatMessages(q, limit);
 
                         return ListTimestampables(messages);
                     }
                     case "logins": 
                     {
                         var q = query != "" ? JsonConvert.DeserializeObject<LoginQuery>(query) : new LoginQuery();
-                        Login[] logins = await _repository.GetLogins(q);
+                        Login[] logins = await _repository.GetLogins(q, limit);
 
                         return ListTimestampables(logins);
                     }
@@ -169,7 +176,7 @@ namespace NW.Discord
                 } 
                 catch (InvalidQueryException e)
                 {
-                    response = "Usage: " + COMMAND + " [deaths|announcements|messages|logins] [options]";
+                    response = "Usage: " + COMMAND + " [deaths|announcements|messages|logins] [options] [limit]";
                 }
                 catch (JsonReaderException e )
                 {
