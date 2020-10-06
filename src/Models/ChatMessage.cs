@@ -9,7 +9,7 @@ namespace NW.Models
         Normal, Whisper, Shout
     }
 
-    public class ChatMessage
+    public class ChatMessage : ITimestampable
     {
         public ChatMessage()
         {
@@ -33,5 +33,15 @@ namespace NW.Models
 
         [EnumDataType(typeof(MessageType))]
         public MessageType Type { get; set; }
+
+        public long GetTimestamp()
+        {
+            return TimeStamp;
+        }
+
+        public override string ToString()
+        {
+            return "[Type:" + Type.ToString() + "] " + Sender.Name + " > " + Message;
+        }
     }
 }

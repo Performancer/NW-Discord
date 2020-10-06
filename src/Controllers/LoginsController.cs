@@ -6,6 +6,7 @@ using NW.Models;
 using NW.Repository;
 using NW.FilterAttributes;
 using NW.Discord;
+using NW.Query;
 
 namespace NW.Controllers
 {
@@ -25,26 +26,29 @@ namespace NW.Controllers
         public Task<Login[]> GetAll(
             [FromQuery(Name = "player-role")] int? playerRole,
             [FromQuery(Name = "type")] int? type,
-            [FromQuery(Name = "fromTime")] long fromTimestamp = long.MinValue,
-            [FromQuery(Name = "toTime")] long toTimestamp = long.MaxValue,
-            [FromQuery(Name = "fromX")] int fromX = int.MinValue,
-            [FromQuery(Name = "fromY")] int fromY = int.MinValue,
-            [FromQuery(Name = "toX")] int toX = int.MaxValue,
-            [FromQuery(Name = "toY")] int toY = int.MaxValue,
-            [FromQuery(Name = "player")] string player = "",
-            [FromQuery(Name = "player-account")] string playerAccount = ""
+            [FromQuery(Name = "fromTime")] long? fromTimestamp,
+            [FromQuery(Name = "toTime")] long? toTimestamp,
+            [FromQuery(Name = "fromX")] int? fromX,
+            [FromQuery(Name = "fromY")] int? fromY,
+            [FromQuery(Name = "toX")] int? toX,
+            [FromQuery(Name = "toY")] int? toY,
+            [FromQuery(Name = "player")] string player,
+            [FromQuery(Name = "player-account")] string playerAccount
         ) {
             return _repository.GetLogins(
-                playerRole,
-                fromX,
-                fromY,
-                toX,
-                toY,
-                type,
-                fromTimestamp,
-                toTimestamp,
-                player,
-                playerAccount
+                new LoginQuery 
+                {
+                    PlayerRole = playerRole,
+                    FromX = fromX,
+                    FromY = fromY,
+                    ToX = toX,
+                    ToY = toY,
+                    Type = type,
+                    FromTimestamp = fromTimestamp,
+                    ToTimestamp = toTimestamp,
+                    Player = player,
+                    PlayerAccount = playerAccount
+                }
             );
         }
 

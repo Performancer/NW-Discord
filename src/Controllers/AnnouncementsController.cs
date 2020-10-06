@@ -6,6 +6,7 @@ using NW.Models;
 using NW.Repository;
 using NW.FilterAttributes;
 using NW.Discord;
+using NW.Query;
 
 namespace NW.Controllers
 {
@@ -24,10 +25,17 @@ namespace NW.Controllers
         [HttpGet]
         public Task<Announcement[]> GetAll(
             [FromQuery(Name = "important")] bool? important,
-            [FromQuery(Name = "from")] long fromTimestamp = long.MinValue,
-            [FromQuery(Name = "to")] long toTimestamp = long.MaxValue
+            [FromQuery(Name = "from")] long? fromTimestamp,
+            [FromQuery(Name = "to")] long? toTimestamp
         ) {
-            return _repository.GetAnnouncements(important, fromTimestamp, toTimestamp);
+            return _repository.GetAnnouncements(
+                new Query.AnnouncementQuery 
+                {
+                    Important = important, 
+                    FromTimestamp = fromTimestamp, 
+                    ToTimestamp = toTimestamp
+                }
+            );
         }
 
         [HttpPost]

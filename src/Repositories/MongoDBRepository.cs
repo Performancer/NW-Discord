@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using MongoDB.Driver;
 
 using NW.Models;
+using NW.Query;
 
 namespace NW.Repository
 {
@@ -30,18 +31,18 @@ namespace NW.Repository
             return announcement;
         }
 
-        public async Task<Announcement[]> GetAnnouncements(
-            bool? important,
-            long fromTimestamp,
-            long toTimestamp
-        ) {
-            FilterDefinition<Announcement> filter = Builders<Announcement>.Filter.And(
-                Builders<Announcement>.Filter.Gte(a => a.TimeStamp, fromTimestamp),
-                Builders<Announcement>.Filter.Lte(a => a.TimeStamp, toTimestamp)
-            );
+        public async Task<Announcement[]> GetAnnouncements(AnnouncementQuery query)
+        {
+            FilterDefinition<Announcement> filter = Builders<Announcement>.Filter.Empty;
 
-            if (important != null)
-                filter &= Builders<Announcement>.Filter.Eq(a => a.Important, important);
+            if(query.FromTimestamp != null)
+                filter &= Builders<Announcement>.Filter.Gte(a => a.TimeStamp, query.FromTimestamp);
+
+            if(query.ToTimestamp != null)
+                filter &= Builders<Announcement>.Filter.Lte(a => a.TimeStamp, query.ToTimestamp);
+
+            if (query.Important != null)
+                filter &= Builders<Announcement>.Filter.Eq(a => a.Important, query.Important);
 
             List<Announcement> announcements = await _announcementCollection.Find(filter).ToListAsync();
 
@@ -54,38 +55,39 @@ namespace NW.Repository
             return message;
         }
 
-        public async Task<ChatMessage[]> GetChatMessages(
-            int? senderRole,
-            int fromX,
-            int fromY,
-            int toX,
-            int toY,
-            int? type,
-            long fromTimestamp,
-            long toTimestamp,
-            string sender,
-            string senderAccount
-        ) {
-            FilterDefinition<ChatMessage> filter = Builders<ChatMessage>.Filter.And(
-                Builders<ChatMessage>.Filter.Gte(m => m.TimeStamp, fromTimestamp),
-                Builders<ChatMessage>.Filter.Lte(m => m.TimeStamp, toTimestamp),
-                Builders<ChatMessage>.Filter.Gte(m => m.Sender.Location.X, fromX),
-                Builders<ChatMessage>.Filter.Gte(m => m.Sender.Location.Y, fromY),
-                Builders<ChatMessage>.Filter.Lte(m => m.Sender.Location.X, toX),
-                Builders<ChatMessage>.Filter.Lte(m => m.Sender.Location.Y, toY)
-            );
+        public async Task<ChatMessage[]> GetChatMessages(MessageQuery query)
+        {
+            FilterDefinition<ChatMessage> filter = Builders<ChatMessage>.Filter.Empty;
 
-            if (senderRole != null)
-                filter &= Builders<ChatMessage>.Filter.Gte(m => m.Sender.Role, (AccessRole)senderRole);
+            if(query.FromTimestamp != null)
+                filter &= Builders<ChatMessage>.Filter.Gte(m => m.TimeStamp, query.FromTimestamp);
 
-            if (type != null)
-                filter &= Builders<ChatMessage>.Filter.Eq(m => m.Type, (MessageType)type);
+            if(query.ToTimestamp != null)
+                filter &= Builders<ChatMessage>.Filter.Lte(m => m.TimeStamp, query.ToTimestamp);
 
-            if (sender != "")
-                filter &= Builders<ChatMessage>.Filter.Eq(m => m.Sender.Name, sender);
+            if(query.FromX != null)
+                filter &= Builders<ChatMessage>.Filter.Gte(m => m.Sender.Location.X, query.FromX);
 
-            if (senderAccount != "")
-                filter &= Builders<ChatMessage>.Filter.Eq(m => m.Sender.AccountName, senderAccount);
+            if(query.FromY != null)
+                filter &= Builders<ChatMessage>.Filter.Gte(m => m.Sender.Location.Y, query.FromY);
+
+            if(query.ToX != null)
+                filter &= Builders<ChatMessage>.Filter.Lte(m => m.Sender.Location.X, query.ToX);
+
+            if(query.ToY != null)
+                filter &= Builders<ChatMessage>.Filter.Lte(m => m.Sender.Location.Y, query.ToY);
+
+            if (query.SenderRole != null)
+                filter &= Builders<ChatMessage>.Filter.Eq(m => m.Sender.Role, (AccessRole)query.SenderRole);
+
+            if (query.Type != null)
+                filter &= Builders<ChatMessage>.Filter.Eq(m => m.Type, (MessageType)query.Type);
+
+            if (query.Sender != null)
+                filter &= Builders<ChatMessage>.Filter.Eq(m => m.Sender.Name, query.Sender);
+
+            if (query.SenderAccount != null)
+                filter &= Builders<ChatMessage>.Filter.Eq(m => m.Sender.AccountName, query.SenderAccount);
 
             List<ChatMessage> chatMessages = await _chatMessageCollection.Find(filter).ToListAsync();
 
@@ -98,60 +100,62 @@ namespace NW.Repository
             return death;
         }
 
-        public async Task<Death[]> GetDeaths(
-            int? killerRole,
-            int? killedRole,
-            int minScore,
-            int maxScore,
-            int fromX,
-            int fromY,
-            int toX,
-            int toY,
-            bool? friendlyFire,
-            long fromTimestamp,
-            long toTimestamp,
-            string killer,
-            string killerAccount,
-            string weapon,
-            string killed,
-            string killedAccount
-        ) {
-            FilterDefinition<Death> filter = Builders<Death>.Filter.And(
-                Builders<Death>.Filter.Gte(d => d.TimeStamp, fromTimestamp),
-                Builders<Death>.Filter.Lte(d => d.TimeStamp, toTimestamp),
-                Builders<Death>.Filter.Gte(d => d.Killed.Score, minScore),
-                Builders<Death>.Filter.Lte(d => d.Killed.Score, maxScore),
-                Builders<Death>.Filter.Gte(d => d.Killed.Location.X, fromX),
-                Builders<Death>.Filter.Gte(d => d.Killed.Location.Y, fromY),
-                Builders<Death>.Filter.Lte(d => d.Killed.Location.X, toX),
-                Builders<Death>.Filter.Lte(d => d.Killed.Location.Y, toY)
-            );
+        public async Task<Death[]> GetDeaths(DeathQuery query) {
+            Console.WriteLine("haetaan");
 
-            if (killerRole != null)
-                filter &= Builders<Death>.Filter.Eq(d => d.Killer.Role, (AccessRole)killerRole);
+            FilterDefinition<Death> filter = Builders<Death>.Filter.Empty;
+            
+            if(query.FromTimestamp != null)
+                filter &= Builders<Death>.Filter.Gte(d => d.TimeStamp, query.FromTimestamp);
 
-            if (killedRole != null)
-                filter &= Builders<Death>.Filter.Eq(d => d.Killed.Role, (AccessRole)killedRole);
+            if(query.ToTimestamp != null)
+                filter &= Builders<Death>.Filter.Lte(d => d.TimeStamp, query.ToTimestamp);
 
-            if (friendlyFire != null)
-                filter &= Builders<Death>.Filter.Eq(d => d.FriendlyFire, friendlyFire);
+            if(query.MinScore != null)
+                filter &= Builders<Death>.Filter.Gte(d => d.Killed.Score, query.MinScore);
 
-            if (killer != "")
-                filter &= Builders<Death>.Filter.Eq(d => d.Killer.Name, killer);
+            if(query.MaxScore != null)
+                filter &= Builders<Death>.Filter.Lte(d => d.Killed.Score, query.MaxScore);
 
-            if (killerAccount != "")
-                filter &= Builders<Death>.Filter.Eq(d => d.Killer.AccountName, killerAccount);
+            if(query.FromX != null)
+                filter &= Builders<Death>.Filter.Gte(d => d.Killed.Location.X, query.FromX);
 
-            if (weapon != "")
-                filter &= Builders<Death>.Filter.Eq(d => d.Weapon, weapon);
+            if(query.FromY != null)
+                filter &= Builders<Death>.Filter.Gte(d => d.Killed.Location.Y, query.FromY);
 
-            if (killed != "")
-                filter &= Builders<Death>.Filter.Eq(d => d.Killed.Name, killed);
+            if(query.ToX != null)
+                filter &= Builders<Death>.Filter.Lte(d => d.Killed.Location.X, query.ToX);
 
-            if (killedAccount != "")
-                filter &= Builders<Death>.Filter.Eq(d => d.Killed.AccountName, killedAccount);
+            if (query.ToY != null)
+                filter &= Builders<Death>.Filter.Lte(d => d.Killed.Location.Y, query.ToY);
+
+            if (query.KillerRole != null)
+                filter &= Builders<Death>.Filter.Eq(d => d.Killer.Role, (AccessRole)query.KillerRole);
+
+            if (query.KilledRole != null)
+                filter &= Builders<Death>.Filter.Eq(d => d.Killed.Role, (AccessRole)query.KilledRole);
+
+            if (query.FriendlyFire != null)
+                filter &= Builders<Death>.Filter.Eq(d => d.FriendlyFire, query.FriendlyFire);
+
+            if (query.Killer != null)
+                filter &= Builders<Death>.Filter.Eq(d => d.Killer.Name, query.Killer);
+
+            if (query.KillerAccount != null)
+                filter &= Builders<Death>.Filter.Eq(d => d.Killer.AccountName, query.KillerAccount);
+
+            if (query.Weapon != null)
+                filter &= Builders<Death>.Filter.Eq(d => d.Weapon, query.Weapon);
+
+            if (query.Killed != null)
+                filter &= Builders<Death>.Filter.Eq(d => d.Killed.Name, query.Killed);
+
+            if (query.KilledAccount != null)
+                filter &= Builders<Death>.Filter.Eq(d => d.Killed.AccountName, query.KilledAccount);
 
             List<Death> deaths = await _deathCollection.Find(filter).ToListAsync();
+
+            Console.WriteLine("haettiin");
 
             return deaths.ToArray();
         }
@@ -162,38 +166,38 @@ namespace NW.Repository
             return login;
         }
 
-        public async Task<Login[]> GetLogins(
-            int? playerRole,
-            int fromX,
-            int fromY,
-            int toX,
-            int toY,
-            int? type,
-            long fromTimestamp,
-            long toTimestamp,
-            string player,
-            string playerAccount
-        ) {
-            FilterDefinition<Login> filter = Builders<Login>.Filter.And(
-                Builders<Login>.Filter.Gte(x => x.TimeStamp, fromTimestamp),
-                Builders<Login>.Filter.Lte(x => x.TimeStamp, toTimestamp),
-                Builders<Login>.Filter.Gte(x => x.Player.Location.X, fromX),
-                Builders<Login>.Filter.Gte(x => x.Player.Location.Y, fromY),
-                Builders<Login>.Filter.Lte(x => x.Player.Location.X, toX),
-                Builders<Login>.Filter.Lte(x => x.Player.Location.Y, toY)
-            );
+        public async Task<Login[]> GetLogins(LoginQuery query) {
+            FilterDefinition<Login> filter = Builders<Login>.Filter.Empty;
 
-            if (playerRole != null)
-                filter &= Builders<Login>.Filter.Gte(x => x.Player.Role, (AccessRole)playerRole);
+            if (query.FromTimestamp != null)
+                filter &= Builders<Login>.Filter.Gte(x => x.TimeStamp, query.FromTimestamp);
 
-            if (type != null)
-                filter &= Builders<Login>.Filter.Eq(x => x.Type, (LoginType)type);
+            if (query.ToTimestamp != null)
+                filter &= Builders<Login>.Filter.Lte(x => x.TimeStamp, query.ToTimestamp);
 
-            if (player != "")
-                filter &= Builders<Login>.Filter.Eq(x => x.Player.Name, player);
+            if (query.FromX != null)
+                filter &= Builders<Login>.Filter.Gte(x => x.Player.Location.X, query.FromX);
 
-            if (playerAccount != "")
-                filter &= Builders<Login>.Filter.Eq(x => x.Player.AccountName, playerAccount);
+            if (query.FromY != null)
+                filter &= Builders<Login>.Filter.Gte(x => x.Player.Location.Y, query.FromY);
+
+            if (query.ToX != null)
+                filter &= Builders<Login>.Filter.Lte(x => x.Player.Location.X, query.ToX);
+
+            if (query.ToY != null)
+                filter &= Builders<Login>.Filter.Lte(x => x.Player.Location.Y, query.ToY);
+
+            if (query.PlayerRole != null)
+                filter &= Builders<Login>.Filter.Gte(x => x.Player.Role, (AccessRole)query.PlayerRole);
+
+            if (query.Type != null)
+                filter &= Builders<Login>.Filter.Eq(x => x.Type, (LoginType)query.Type);
+
+            if (query.Player != null)
+                filter &= Builders<Login>.Filter.Eq(x => x.Player.Name, query.Player);
+
+            if (query.PlayerAccount != null)
+                filter &= Builders<Login>.Filter.Eq(x => x.Player.AccountName, query.PlayerAccount);
 
             List<Login> logins = await _loginCollection.Find(filter).ToListAsync();
 

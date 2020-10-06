@@ -6,6 +6,7 @@ using NW.Models;
 using NW.Repository;
 using NW.FilterAttributes;
 using NW.Discord;
+using NW.Query;
 
 namespace NW.Controllers
 {
@@ -26,37 +27,40 @@ namespace NW.Controllers
             [FromQuery(Name = "killer-role")] int? killerRole,
             [FromQuery(Name = "killed-role")] int? killedRole,
             [FromQuery(Name = "friendly")] bool? friendlyFire,
-            [FromQuery(Name = "minscore")] int minScore = int.MinValue,
-            [FromQuery(Name = "maxscore")] int maxScore = int.MaxValue,
-            [FromQuery(Name = "fromX")] int fromX = int.MinValue,
-            [FromQuery(Name = "fromY")] int fromY = int.MinValue,
-            [FromQuery(Name = "toX")] int toX = int.MaxValue,
-            [FromQuery(Name = "toY")] int toY = int.MaxValue,
-            [FromQuery(Name = "fromTime")] long fromTimestamp = long.MinValue,
-            [FromQuery(Name = "toTime")] long toTimestamp = long.MaxValue,
-            [FromQuery(Name = "killer")] string killer = "",
-            [FromQuery(Name = "killer-account")] string killerAccount = "",
-            [FromQuery(Name = "killed")] string killed = "",
-            [FromQuery(Name = "killed-account")] string killedAccount = "",
-            [FromQuery(Name = "weapon")] string weapon = ""
+            [FromQuery(Name = "minscore")] int? minScore,
+            [FromQuery(Name = "maxscore")] int? maxScore,
+            [FromQuery(Name = "fromX")] int? fromX,
+            [FromQuery(Name = "fromY")] int? fromY,
+            [FromQuery(Name = "toX")] int? toX,
+            [FromQuery(Name = "toY")] int? toY,
+            [FromQuery(Name = "fromTime")] long? fromTimestamp,
+            [FromQuery(Name = "toTime")] long? toTimestamp,
+            [FromQuery(Name = "killer")] string killer,
+            [FromQuery(Name = "killer-account")] string killerAccount,
+            [FromQuery(Name = "killed")] string killed,
+            [FromQuery(Name = "killed-account")] string killedAccount,
+            [FromQuery(Name = "weapon")] string weapon
         ) {
-            return _repository.GetDeaths(
-                killerRole,
-                killedRole,
-                minScore,
-                maxScore,
-                fromX,
-                fromY,
-                toX,
-                toY,
-                friendlyFire,
-                fromTimestamp,
-                toTimestamp,
-                killer,
-                killerAccount,
-                weapon,
-                killed,
-                killedAccount
+            return _repository.GetDeaths( 
+                new DeathQuery
+                {
+                    KillerRole = killerRole,
+                    KilledRole = killedRole,
+                    MinScore = minScore,
+                    MaxScore = maxScore,
+                    FromX = fromX,
+                    FromY = fromY,
+                    ToX = toX,
+                    ToY = toY,
+                    FriendlyFire = friendlyFire,
+                    FromTimestamp = fromTimestamp,
+                    ToTimestamp = toTimestamp,
+                    Killer = killer,
+                    KillerAccount = killerAccount,
+                    Weapon = weapon,
+                    Killed = killed,
+                    KilledAccount = killedAccount
+                }
             );
         }
 

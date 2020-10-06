@@ -6,6 +6,7 @@ using NW.Models;
 using NW.Repository;
 using NW.FilterAttributes;
 using NW.Discord;
+using NW.Query;
 
 namespace NW.Controllers
 {
@@ -25,26 +26,29 @@ namespace NW.Controllers
         public Task<ChatMessage[]> GetAll(
             [FromQuery(Name = "sender-role")] int? senderRole,
             [FromQuery(Name = "type")] int? type,
-            [FromQuery(Name = "fromTime")] long fromTimestamp = long.MinValue,
-            [FromQuery(Name = "toTime")] long toTimestamp = long.MaxValue,
-            [FromQuery(Name = "fromX")] int fromX = int.MinValue,
-            [FromQuery(Name = "fromY")] int fromY = int.MinValue,
-            [FromQuery(Name = "toX")] int toX = int.MaxValue,
-            [FromQuery(Name = "toY")] int toY = int.MaxValue,
-            [FromQuery(Name = "sender")] string sender = "",
-            [FromQuery(Name = "sender-account")] string senderAccount = ""
+            [FromQuery(Name = "from-time")] long? fromTimestamp,
+            [FromQuery(Name = "to-time")] long? toTimestamp,
+            [FromQuery(Name = "from-x")] int? fromX,
+            [FromQuery(Name = "from-y")] int? fromY,
+            [FromQuery(Name = "to-x")] int? toX,
+            [FromQuery(Name = "to-y")] int? toY,
+            [FromQuery(Name = "sender")] string sender,
+            [FromQuery(Name = "sender-account")] string senderAccount
         ) {
             return _repository.GetChatMessages(
-                senderRole,
-                fromX,
-                fromY,
-                toX,
-                toY,
-                type,
-                fromTimestamp,
-                toTimestamp,
-                sender,
-                senderAccount
+                new MessageQuery
+                {
+                    SenderRole = senderRole,
+                    FromX = fromX,
+                    FromY = fromY,
+                    ToX = toX,
+                    ToY = toY,
+                    Type = type,
+                    FromTimestamp = fromTimestamp,
+                    ToTimestamp = toTimestamp,
+                    Sender = sender,
+                    SenderAccount = senderAccount
+                }
             );
         }
 
